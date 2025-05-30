@@ -1,0 +1,15 @@
+# Backend Dependencies
+/node_modules
+
+# Backend Environment variables
+.env
+.env.*
+!.env.example
+
+# Backend Log files
+*.log
+logs/
+
+# Backend Build output (jika ada)
+# /dist
+# /build
