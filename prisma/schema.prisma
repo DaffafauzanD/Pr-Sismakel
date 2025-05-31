@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model Data_Produksi_EXPORT {
+  No                              String?  @db.VarChar(50)
+  Telur_Butir                     Decimal? @map("Telur Butir") @db.Decimal(28, 0)
+  Telur__Gram_                    Decimal? @map("Telur (Gram)") @db.Decimal(28, 0)
+  Telur_Hari__Kg_                 Decimal? @map("Telur Hari (Kg)") @db.Decimal(28, 0)
+  Telur_Minggu__Kg_               Decimal? @map("Telur Minggu (Kg)") @db.Decimal(28, 0)
+  Telur_Bulan__Kg_                Decimal? @map("Telur Bulan (Kg)") @db.Decimal(28, 0)
+  Telur_Quartal_4_Bulan__Kg_      Decimal? @map("Telur Quartal 4 Bulan (Kg)") @db.Decimal(28, 0)
+  Pendapatan_Hari__Rp_            Decimal? @map("Pendapatan Hari (Rp)") @db.Decimal(28, 0)
+  Pendapatan_Minggu__Rp_          Decimal? @map("Pendapatan Minggu (Rp)") @db.Decimal(28, 0)
+  Pendapatan_Bulan__Rp_           Decimal? @map("Pendapatan Bulan (Rp)") @db.Decimal(28, 0)
+  Pendapatan_Quartal_4_Bulan__Rp_ Decimal? @map("Pendapatan Quartal 4 Bulan (Rp)") @db.Decimal(28, 0)
+  Pendapatan_Tahun__Rp_           Decimal? @map("Pendapatan Tahun (Rp)") @db.Decimal(28, 0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model data_PRODUKSI_PAKAN {
+  No                               String?  @db.VarChar(50)
+  Pakan_Hari__Kg_                  Decimal? @map("Pakan Hari (Kg)") @db.Decimal(28, 0)
+  Pakan_Minggu__Kg_                Decimal? @map("Pakan Minggu (Kg)") @db.Decimal(28, 0)
+  Pakan_Bulan__Kg_                 Decimal? @map("Pakan Bulan (Kg)") @db.Decimal(28, 0)
+  Pakan_Quartal_4_Bulan__Kg_       Decimal? @map("Pakan Quartal 4 Bulan (Kg)") @db.Decimal(28, 0)
+  Pengeluaran_Hari__Rp_            Decimal? @map("Pengeluaran Hari (Rp)") @db.Decimal(28, 0)
+  Pengeluaran_Minggu__Rp_          Decimal? @map("Pengeluaran Minggu (Rp)") @db.Decimal(28, 0)
+  Pengeluaran_Bulan__Rp_           Decimal? @map("Pengeluaran Bulan (Rp)") @db.Decimal(28, 0)
+  Pengeluaran_Quartal_4_Bulan__Rp_ Decimal? @map("Pengeluaran Quartal 4 Bulan (Rp)") @db.Decimal(28, 0)
+  Pengeluaran_Tahun__Rp_           Decimal? @map("Pengeluaran Tahun (Rp)") @db.Decimal(28, 0)
+
+  @@ignore
+}
+
+model ma_analisis {
+  id            Int       @id(map: "PK__ma_anali__3213E83FE6453ACD") @default(autoincrement())
+  jenis         String?   @db.VarChar(50)
+  periode_mulai DateTime? @db.Date
+  periode_akhir DateTime? @db.Date
+  nilai_ma      Decimal?  @db.Decimal(18, 2)
+  kategori      String?   @db.VarChar(50)
+  created_at    DateTime? @default(now(), map: "DF__ma_analis__creat__5DCAEF64") @db.DateTime
+}
+
+model pakan {
+  id                Int            @id(map: "PK__pakan__3213E83F0C698E60") @default(autoincrement())
+  tanggal           DateTime       @default(now(), map: "DF__pakan__tanggal__6383C8BA") @db.Date
+  pakan_kg_hari     Decimal?       @db.Decimal(10, 2)
+  pakan_kg_minggu   Decimal?       @db.Decimal(10, 2)
+  pakan_kg_bulan    Decimal?       @db.Decimal(10, 2)
+  pakan_ref_quartal Int?
+  persen_pakan      Decimal?       @db.Decimal(10, 2)
+  created_at        DateTime?      @default(now(), map: "DF__pakan__created_a__68487DD7") @db.DateTime
+  update_at         DateTime?      @default(now(), map: "DF__pakan__update_at__693CA210") @db.DateTime
+  Pakan_quartal     Pakan_quartal? @relation(fields: [pakan_ref_quartal], references: [Id_quartal], onDelete: NoAction, onUpdate: NoAction, map: "pakan_Pakan_quartal_FK")
+  pengeluaran       pengeluaran[]
+}
+
+model Pakan_bulan {
+  id               Int       @id(map: "PK__produksi__3132T83F95EC079D") @default(autoincrement())
+  bulan            Int
+  tahun            Int
+  total_Pakan_kg   Decimal   @db.Decimal(10, 2)
+  jumlah_hari      Int
+  rata_rata_harian Decimal   @db.Decimal(10, 2)
+  created_at       DateTime? @default(now(), map: "DF__produksi___creat__1BC821DD") @db.DateTime
+  update_at        DateTime? @default(now(), map: "DF__produksi___updat__1CBC4616") @db.DateTime
+
+  @@unique([bulan, tahun], map: "UP_Bulan_Tahun")
+}
+
+model Pakan_hari {
+  Id       Int       @id(map: "Pakan_hari_PK") @default(autoincrement())
+  Tanggal  DateTime? @db.Date
+  Pakan_kg Decimal?  @db.Decimal(10, 2)
+}
+
+model Pakan_quartal {
+  Id_quartal       Int      @id(map: "Pakan_quartal_PK") @default(autoincrement())
+  Pakan_kg_quartal Decimal? @db.Decimal(10, 2)
+  pakan            pakan[]
+}
+
+model pendapatan {
+  id                 Int            @id(map: "PK__pendapat__3213E83FE853163E") @default(autoincrement())
+  produksi_id        Int
+  pendapatan_bulan   Decimal?       @db.Decimal(18, 2)
+  pendapatan_quartal Decimal?       @db.Decimal(18, 2)
+  pendapatan_tahun   Decimal?       @db.Decimal(18, 2)
+  created_at         DateTime?      @default(now(), map: "DF__pendapata__creat__59063A47") @db.DateTime
+  update_at          DateTime?      @default(now(), map: "DF__pendapata__updat__59FA5E80") @db.DateTime
+  produksi_telur     produksi_telur @relation(fields: [produksi_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_pendapatan_produksi")
+}
+
+model pengeluaran {
+  id                  Int       @id(map: "PK__pengelua__3213E83F69D7E8AA") @default(autoincrement())
+  pakan_id            Int
+  tanggal             DateTime  @default(now(), map: "DF__pengeluar__tangg__6754599E") @db.Date
+  pengeluaran_hari    Decimal?  @db.Decimal(20, 2)
+  pengeluaran_minggu  Decimal?  @db.Decimal(20, 2)
+  pengeluaran_bulan   Decimal?  @db.Decimal(20, 2)
+  pengeluaran_quartal Decimal?  @db.Decimal(20, 2)
+  pengeluaran_tahun   Decimal?  @db.Decimal(20, 2)
+  create_at           DateTime? @default(now(), map: "DF__pengeluar__creat__6A30C649") @db.DateTime
+  update_at           DateTime? @default(now(), map: "DF__pengeluar__updat__6B24EA82") @db.DateTime
+  pakan               pakan     @relation(fields: [pakan_id], references: [id], onUpdate: NoAction, map: "FK__pengeluar__pakan__66603565")
+}
+
+model produksi_telur {
+  id                Int            @id(map: "PK__produksi__3213E83FCC2F38B9") @default(autoincrement())
+  tanggal           DateTime       @db.Date
+  telur_butir       Int
+  telur_gram        Int
+  telur_kg_hari     Decimal        @db.Decimal(10, 2)
+  telur_kg_minggu   Decimal?       @db.Decimal(10, 2)
+  telur_kg_bulan    Decimal?       @db.Decimal(10, 2)
+  telur_ref_quartal Int?
+  persen_produksi   Decimal?       @db.Decimal(5, 2)
+  created_at        DateTime?      @default(now(), map: "DF__produksi___creat__5535A963") @db.DateTime
+  update_at         DateTime?      @default(now(), map: "DF__produksi___updat__5629CD9C") @db.DateTime
+  pendapatan        pendapatan[]
+  Telur_quartal     Telur_quartal? @relation(fields: [telur_ref_quartal], references: [Id_quartal], onDelete: NoAction, onUpdate: NoAction, map: "produksi_telur_Telur_quartal_FK")
+}
+
+model produksi_telur_bulan {
+  id               Int       @id(map: "PK__produksi__3213E83F95EC079D") @default(autoincrement())
+  bulan            Int
+  tahun            Int
+  total_telur_kg   Decimal   @db.Decimal(10, 2)
+  jumlah_hari      Int
+  rata_rata_harian Decimal   @db.Decimal(10, 2)
+  created_at       DateTime? @default(now(), map: "DF__produksi___creat__03F0984C") @db.DateTime
+  update_at        DateTime? @default(now(), map: "DF__produksi___updat__04E4BC85") @db.DateTime
+
+  @@unique([bulan, tahun], map: "UC_Bulan_Tahun")
+}
+
+model Produksi_telur_hari {
+  Id       Int       @id(map: "Produksi_telur_hari_PK") @default(autoincrement())
+  Tanggal  DateTime? @db.Date
+  Telur_kg Decimal?  @db.Decimal(20, 8)
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61DF98EE38") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model Telur_quartal {
+  Id_quartal       Int              @id(map: "Telur_quartal_PK") @default(autoincrement())
+  Telur_kg_quartal Decimal?         @db.Decimal(20, 2)
+  produksi_telur   produksi_telur[]
+}
+
+model user {
+  id            Int       @id(map: "PK__user__3213E83FDAD8F7DE") @default(autoincrement())
+  username      String    @unique(map: "UQ__user__F3DBC572E0175945") @db.VarChar(50)
+  password_hash String    @db.NVarChar(Max)
+  created_at    DateTime? @default(now(), map: "DF__user__created_at__52593CB8") @db.DateTime
+  is_admin      Boolean?  @default(false, map: "DF__user__is_admin__2739D489")
+  email         String    @unique(map: "user_unique") @db.NVarChar(100)
+  fullname      String?   @db.NVarChar(100)
+}
