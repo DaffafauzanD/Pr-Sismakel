@@ -7,171 +7,117 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model Data_Produksi_EXPORT {
-  No                              String?  @db.VarChar(50)
-  Telur_Butir                     Decimal? @map("Telur Butir") @db.Decimal(28, 0)
-  Telur__Gram_                    Decimal? @map("Telur (Gram)") @db.Decimal(28, 0)
-  Telur_Hari__Kg_                 Decimal? @map("Telur Hari (Kg)") @db.Decimal(28, 0)
-  Telur_Minggu__Kg_               Decimal? @map("Telur Minggu (Kg)") @db.Decimal(28, 0)
-  Telur_Bulan__Kg_                Decimal? @map("Telur Bulan (Kg)") @db.Decimal(28, 0)
-  Telur_Quartal_4_Bulan__Kg_      Decimal? @map("Telur Quartal 4 Bulan (Kg)") @db.Decimal(28, 0)
-  Pendapatan_Hari__Rp_            Decimal? @map("Pendapatan Hari (Rp)") @db.Decimal(28, 0)
-  Pendapatan_Minggu__Rp_          Decimal? @map("Pendapatan Minggu (Rp)") @db.Decimal(28, 0)
-  Pendapatan_Bulan__Rp_           Decimal? @map("Pendapatan Bulan (Rp)") @db.Decimal(28, 0)
-  Pendapatan_Quartal_4_Bulan__Rp_ Decimal? @map("Pendapatan Quartal 4 Bulan (Rp)") @db.Decimal(28, 0)
-  Pendapatan_Tahun__Rp_           Decimal? @map("Pendapatan Tahun (Rp)") @db.Decimal(28, 0)
-
-  @@ignore
+model Barang {
+  id             String        @id(map: "PK__Barang__3213E83FAACEE62E") @default(dbgenerated("newid()"), map: "DF__Barang__id__5CD6CB2B") @db.UniqueIdentifier
+  Nama           String        @db.NVarChar(255)
+  id_kategori    String        @db.UniqueIdentifier
+  stock          Int           @default(0, map: "DF__Barang__stock__5DCAEF64")
+  satuan_harga   Decimal       @db.Decimal(15, 2)
+  created_at     DateTime?     @default(now(), map: "DF__Barang__created___5EBF139D")
+  updated_at     DateTime?     @default(now(), map: "DF__Barang__updated___5FB337D6")
+  tanggal_keluar DateTime?     @db.Date
+  created_by     String?       @db.UniqueIdentifier
+  updated_by     String?       @db.UniqueIdentifier
+  Token          String?       @db.NVarChar(255)
+  Kategori       Kategori      @relation(fields: [id_kategori], references: [id], onUpdate: NoAction, map: "Barang_FK")
+  Pengeluaran    Pengeluaran[]
+  Produk         Produk[]
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model data_PRODUKSI_PAKAN {
-  No                               String?  @db.VarChar(50)
-  Pakan_Hari__Kg_                  Decimal? @map("Pakan Hari (Kg)") @db.Decimal(28, 0)
-  Pakan_Minggu__Kg_                Decimal? @map("Pakan Minggu (Kg)") @db.Decimal(28, 0)
-  Pakan_Bulan__Kg_                 Decimal? @map("Pakan Bulan (Kg)") @db.Decimal(28, 0)
-  Pakan_Quartal_4_Bulan__Kg_       Decimal? @map("Pakan Quartal 4 Bulan (Kg)") @db.Decimal(28, 0)
-  Pengeluaran_Hari__Rp_            Decimal? @map("Pengeluaran Hari (Rp)") @db.Decimal(28, 0)
-  Pengeluaran_Minggu__Rp_          Decimal? @map("Pengeluaran Minggu (Rp)") @db.Decimal(28, 0)
-  Pengeluaran_Bulan__Rp_           Decimal? @map("Pengeluaran Bulan (Rp)") @db.Decimal(28, 0)
-  Pengeluaran_Quartal_4_Bulan__Rp_ Decimal? @map("Pengeluaran Quartal 4 Bulan (Rp)") @db.Decimal(28, 0)
-  Pengeluaran_Tahun__Rp_           Decimal? @map("Pengeluaran Tahun (Rp)") @db.Decimal(28, 0)
-
-  @@ignore
+model HistoriPenjualan {
+  id               String    @id(map: "PK__HistoriP__3213E83F7DCF9609") @default(dbgenerated("newid()"), map: "DF__HistoriPenju__id__4D94879B") @db.UniqueIdentifier
+  id_transaksi     String    @db.UniqueIdentifier
+  id_produk_detail String    @db.UniqueIdentifier
+  created_at       DateTime? @default(now(), map: "DF__HistoriPe__creat__4E88ABD4")
+  updated_at       DateTime? @default(now(), map: "DF__HistoriPe__updat__4F7CD00D")
+  created_by       String?   @db.UniqueIdentifier
+  updated_by       String?   @db.UniqueIdentifier
+  Transaksi        Transaksi @relation(fields: [id_transaksi], references: [id], onUpdate: NoAction, map: "HistoriPenjualan_FK")
+  Produk           Produk    @relation(fields: [id_produk_detail], references: [id], onUpdate: NoAction, map: "HistoriPenjualan_FK_1")
 }
 
-model ma_analisis {
-  id            Int       @id(map: "PK__ma_anali__3213E83FE6453ACD") @default(autoincrement())
-  jenis         String?   @db.VarChar(50)
-  periode_mulai DateTime? @db.Date
-  periode_akhir DateTime? @db.Date
-  nilai_ma      Decimal?  @db.Decimal(18, 2)
-  kategori      String?   @db.VarChar(50)
-  created_at    DateTime? @default(now(), map: "DF__ma_analis__creat__5DCAEF64") @db.DateTime
+model Kategori {
+  id         String    @id(map: "PK__Kategori__3213E83FC390DE18") @default(dbgenerated("newid()"), map: "DF__Kategori__id__6383C8BA") @db.UniqueIdentifier
+  name       String    @unique(map: "UQ__Kategori__72E12F1B39DEA4E6") @db.NVarChar(100)
+  created_at DateTime? @default(now(), map: "DF__Kategori__create__6477ECF3")
+  updated_at DateTime?
+  created_by String?   @db.UniqueIdentifier
+  updated_by String?   @db.UniqueIdentifier
+  Barang     Barang[]
 }
 
-model pakan {
-  id                Int            @id(map: "PK__pakan__3213E83F0C698E60") @default(autoincrement())
-  tanggal           DateTime       @default(now(), map: "DF__pakan__tanggal__6383C8BA") @db.Date
-  pakan_kg_hari     Decimal?       @db.Decimal(10, 2)
-  pakan_kg_minggu   Decimal?       @db.Decimal(10, 2)
-  pakan_kg_bulan    Decimal?       @db.Decimal(10, 2)
-  pakan_ref_quartal Int?
-  persen_pakan      Decimal?       @db.Decimal(10, 2)
-  created_at        DateTime?      @default(now(), map: "DF__pakan__created_a__68487DD7") @db.DateTime
-  update_at         DateTime?      @default(now(), map: "DF__pakan__update_at__693CA210") @db.DateTime
-  Pakan_quartal     Pakan_quartal? @relation(fields: [pakan_ref_quartal], references: [Id_quartal], onDelete: NoAction, onUpdate: NoAction, map: "pakan_Pakan_quartal_FK")
-  pengeluaran       pengeluaran[]
+model Pendapatan {
+  id                         String     @id(map: "PK__Pendapat__3213E83FC9571B6C") @default(dbgenerated("newid()"), map: "DF__Pendapatan__id__48CFD27E") @db.UniqueIdentifier
+  id_transaksi               String?    @unique(map: "UQ__Pendapat__205B81D10999137D") @db.UniqueIdentifier
+  total_pendapatan_transaksi Decimal    @db.Decimal(15, 2)
+  created_at                 DateTime?  @default(now(), map: "DF__Pendapata__creat__49C3F6B7")
+  updated_at                 DateTime?  @default(now(), map: "DF__Pendapata__updat__4AB81AF0")
+  created_by                 String?    @db.UniqueIdentifier
+  updated_by                 String?    @db.UniqueIdentifier
+  Transaksi                  Transaksi? @relation(fields: [id_transaksi], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Pendapatan_FK")
 }
 
-model Pakan_bulan {
-  id               Int       @id(map: "PK__produksi__3132T83F95EC079D") @default(autoincrement())
-  bulan            Int
-  tahun            Int
-  total_Pakan_kg   Decimal   @db.Decimal(10, 2)
-  jumlah_hari      Int
-  rata_rata_harian Decimal   @db.Decimal(10, 2)
-  created_at       DateTime? @default(now(), map: "DF__produksi___creat__1BC821DD") @db.DateTime
-  update_at        DateTime? @default(now(), map: "DF__produksi___updat__1CBC4616") @db.DateTime
-
-  @@unique([bulan, tahun], map: "UP_Bulan_Tahun")
+model Pengeluaran {
+  id                    String    @id(map: "PK__Pengelua__3213E83FA6181269") @default(dbgenerated("newid()"), map: "DF__Pengeluaran__id__4222D4EF") @db.UniqueIdentifier
+  id_barang             String?   @db.UniqueIdentifier
+  deskripsi_pengeluaran String    @db.NVarChar(255)
+  jumlah_barang         Int?
+  total_harga           Decimal   @db.Decimal(15, 2)
+  tanggal_pengeluaran   DateTime  @default(dbgenerated("CONVERT([date],getdate())"), map: "DF__Pengeluar__tangg__4316F928") @db.Date
+  created_at            DateTime? @default(now(), map: "DF__Pengeluar__creat__440B1D61")
+  updated_at            DateTime? @default(now(), map: "DF__Pengeluar__updat__44FF419A")
+  created_by            String?   @db.UniqueIdentifier
+  updated_by            String?   @db.UniqueIdentifier
+  Barang                Barang?   @relation(fields: [id_barang], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Pengeluaran_FK")
 }
 
-model Pakan_hari {
-  Id       Int       @id(map: "Pakan_hari_PK") @default(autoincrement())
-  Tanggal  DateTime? @db.Date
-  Pakan_kg Decimal?  @db.Decimal(10, 2)
+model Produk {
+  id                   String             @id(map: "PK__Produk__3213E83F6C3DFDF2") @default(dbgenerated("newid()"), map: "DF__Produk__id__52593CB8") @db.UniqueIdentifier
+  id_transaksi         String             @db.UniqueIdentifier
+  id_barang            String             @db.UniqueIdentifier
+  jumlah_barang        Int
+  harga_saat_transaksi Decimal            @db.Decimal(15, 2)
+  created_at           DateTime?          @default(now(), map: "DF__Produk__created___534D60F1")
+  updated_at           DateTime?          @default(now(), map: "DF__Produk__updated___5441852A")
+  created_by           String?            @db.UniqueIdentifier
+  updated_by           String?            @db.UniqueIdentifier
+  HistoriPenjualan     HistoriPenjualan[]
+  Barang               Barang             @relation(fields: [id_barang], references: [id], onUpdate: NoAction, map: "Produk_FK")
+  Transaksi            Transaksi          @relation(fields: [id_transaksi], references: [id], onUpdate: NoAction, map: "Produk_FK_1")
 }
 
-model Pakan_quartal {
-  Id_quartal       Int      @id(map: "Pakan_quartal_PK") @default(autoincrement())
-  Pakan_kg_quartal Decimal? @db.Decimal(10, 2)
-  pakan            pakan[]
+model Role {
+  id         String    @id(map: "PK__Role__3213E83F5A7CE42E") @default(dbgenerated("newid()"), map: "DF__Role__id__6EF57B66") @db.UniqueIdentifier
+  name       String    @unique(map: "UQ__Role__72E12F1B752E3AAA") @db.NVarChar(100)
+  created_at DateTime? @default(now(), map: "DF__Role__created_at__6FE99F9F")
+  updated_at DateTime? @default(now(), map: "DF__Role__updated_at__70DDC3D8")
+  created_by String?   @db.UniqueIdentifier
+  updated_by String?   @db.UniqueIdentifier
+  User       User[]
 }
 
-model pendapatan {
-  id                 Int            @id(map: "PK__pendapat__3213E83FE853163E") @default(autoincrement())
-  produksi_id        Int
-  pendapatan_bulan   Decimal?       @db.Decimal(18, 2)
-  pendapatan_quartal Decimal?       @db.Decimal(18, 2)
-  pendapatan_tahun   Decimal?       @db.Decimal(18, 2)
-  created_at         DateTime?      @default(now(), map: "DF__pendapata__creat__59063A47") @db.DateTime
-  update_at          DateTime?      @default(now(), map: "DF__pendapata__updat__59FA5E80") @db.DateTime
-  produksi_telur     produksi_telur @relation(fields: [produksi_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_pendapatan_produksi")
+model Transaksi {
+  id                      String             @id(map: "PK__Transaks__3213E83FB149B6B3") @default(dbgenerated("newid()"), map: "DF__Transaksi__id__571DF1D5") @db.UniqueIdentifier
+  deskripsi_service       String?            @db.NVarChar(Max)
+  total_harga_keseluruhan Decimal            @db.Decimal(15, 2)
+  is_service              Boolean            @default(false, map: "DF__Transaksi__is_se__5812160E")
+  created_at              DateTime?          @default(now(), map: "DF__Transaksi__creat__59063A47")
+  updated_at              DateTime?          @default(now(), map: "DF__Transaksi__updat__59FA5E80")
+  created_by              String?            @db.UniqueIdentifier
+  updated_by              String?            @db.UniqueIdentifier
+  HistoriPenjualan        HistoriPenjualan[]
+  Pendapatan              Pendapatan?
+  Produk                  Produk[]
 }
 
-model pengeluaran {
-  id                  Int       @id(map: "PK__pengelua__3213E83F69D7E8AA") @default(autoincrement())
-  pakan_id            Int
-  tanggal             DateTime  @default(now(), map: "DF__pengeluar__tangg__6754599E") @db.Date
-  pengeluaran_hari    Decimal?  @db.Decimal(20, 2)
-  pengeluaran_minggu  Decimal?  @db.Decimal(20, 2)
-  pengeluaran_bulan   Decimal?  @db.Decimal(20, 2)
-  pengeluaran_quartal Decimal?  @db.Decimal(20, 2)
-  pengeluaran_tahun   Decimal?  @db.Decimal(20, 2)
-  create_at           DateTime? @default(now(), map: "DF__pengeluar__creat__6A30C649") @db.DateTime
-  update_at           DateTime? @default(now(), map: "DF__pengeluar__updat__6B24EA82") @db.DateTime
-  pakan               pakan     @relation(fields: [pakan_id], references: [id], onUpdate: NoAction, map: "FK__pengeluar__pakan__66603565")
-}
-
-model produksi_telur {
-  id                Int            @id(map: "PK__produksi__3213E83FCC2F38B9") @default(autoincrement())
-  tanggal           DateTime       @db.Date
-  telur_butir       Int
-  telur_gram        Int
-  telur_kg_hari     Decimal        @db.Decimal(10, 2)
-  telur_kg_minggu   Decimal?       @db.Decimal(10, 2)
-  telur_kg_bulan    Decimal?       @db.Decimal(10, 2)
-  telur_ref_quartal Int?
-  persen_produksi   Decimal?       @db.Decimal(5, 2)
-  created_at        DateTime?      @default(now(), map: "DF__produksi___creat__5535A963") @db.DateTime
-  update_at         DateTime?      @default(now(), map: "DF__produksi___updat__5629CD9C") @db.DateTime
-  pendapatan        pendapatan[]
-  Telur_quartal     Telur_quartal? @relation(fields: [telur_ref_quartal], references: [Id_quartal], onDelete: NoAction, onUpdate: NoAction, map: "produksi_telur_Telur_quartal_FK")
-}
-
-model produksi_telur_bulan {
-  id               Int       @id(map: "PK__produksi__3213E83F95EC079D") @default(autoincrement())
-  bulan            Int
-  tahun            Int
-  total_telur_kg   Decimal   @db.Decimal(10, 2)
-  jumlah_hari      Int
-  rata_rata_harian Decimal   @db.Decimal(10, 2)
-  created_at       DateTime? @default(now(), map: "DF__produksi___creat__03F0984C") @db.DateTime
-  update_at        DateTime? @default(now(), map: "DF__produksi___updat__04E4BC85") @db.DateTime
-
-  @@unique([bulan, tahun], map: "UC_Bulan_Tahun")
-}
-
-model Produksi_telur_hari {
-  Id       Int       @id(map: "Produksi_telur_hari_PK") @default(autoincrement())
-  Tanggal  DateTime? @db.Date
-  Telur_kg Decimal?  @db.Decimal(20, 8)
-}
-
-model sysdiagrams {
-  name         String @db.NVarChar(128)
-  principal_id Int
-  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61DF98EE38") @default(autoincrement())
-  version      Int?
-  definition   Bytes?
-
-  @@unique([principal_id, name], map: "UK_principal_name")
-}
-
-model Telur_quartal {
-  Id_quartal       Int              @id(map: "Telur_quartal_PK") @default(autoincrement())
-  Telur_kg_quartal Decimal?         @db.Decimal(20, 2)
-  produksi_telur   produksi_telur[]
-}
-
-model user {
-  id            Int       @id(map: "PK__user__3213E83FDAD8F7DE") @default(autoincrement())
-  username      String    @unique(map: "UQ__user__F3DBC572E0175945") @db.VarChar(50)
-  password_hash String    @db.NVarChar(Max)
-  created_at    DateTime? @default(now(), map: "DF__user__created_at__52593CB8") @db.DateTime
-  is_admin      Boolean?  @default(false, map: "DF__user__is_admin__2739D489")
-  email         String    @unique(map: "user_unique") @db.NVarChar(100)
-  fullname      String?   @db.NVarChar(100)
+model User {
+  id         String    @id(map: "PK__User__3213E83F4BBF2674") @default(dbgenerated("newid()"), map: "DF__User__id__693CA210") @db.UniqueIdentifier
+  username   String    @unique(map: "UQ__User__F3DBC572DA2082F0") @db.NVarChar(255)
+  password   String    @db.NVarChar(255)
+  id_role    String    @db.UniqueIdentifier
+  created_at DateTime? @default(now(), map: "DF__User__created_at__6A30C649")
+  updated_at DateTime? @default(now(), map: "DF__User__updated_at__6B24EA82")
+  created_by String?   @db.UniqueIdentifier
+  updated_by String?   @db.UniqueIdentifier
+  Role       Role      @relation(fields: [id_role], references: [id], onUpdate: NoAction, map: "User_FK")
 }
