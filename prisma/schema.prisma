@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model INVENTORY {
+  ID              String      @id(map: "PK_INVENTORY") @default(dbgenerated("newid()"), map: "DF__INVENTORY__ID__5812160E") @db.UniqueIdentifier
+  PRODUCT_ID      String      @db.UniqueIdentifier
+  QUANTITY_CHANGE Int
+  REASON          String      @db.NVarChar(255)
+  CREATE_DATE     DateTime    @db.DateTime
+  CREATE_BY       String      @db.NVarChar(255)
+  UPDATE_DATE     DateTime?   @db.DateTime
+  UPDATE_BY       String?     @db.NVarChar(255)
+  MST_PRODUCT     MST_PRODUCT @relation(fields: [PRODUCT_ID], references: [ID], onUpdate: NoAction, map: "INVENTORY_FK")
+}
+
+model MST_CATEGORY {
+  ID          String        @id(map: "PK_MST_CATEGORY") @default(dbgenerated("newid()"), map: "DF__MST_CATEGORY__ID__571DF1D5") @db.UniqueIdentifier
+  NAME        String        @db.NVarChar(255)
+  DESCRIPTION String?       @db.NVarChar(255)
+  CREATE_DATE DateTime      @db.DateTime
+  CREATE_BY   String        @db.NVarChar(255)
+  UPDATE_DATE DateTime?     @db.DateTime
+  UPDATE_BY   String?       @db.NVarChar(255)
+  MST_PRODUCT MST_PRODUCT[]
+}
+
+model MST_PRODUCT {
+  ID                    String                  @id(map: "MST_PRODUCT_PK") @default(dbgenerated("newid()"), map: "DF__MST_PRODUCT__ID__38996AB5") @db.UniqueIdentifier
+  NAME                  String                  @db.NVarChar(255)
+  DESCRIPTION           String?                 @db.Text
+  PRICE                 Decimal                 @db.Decimal(10, 2)
+  STOCK                 Int
+  CREATE_DATE           DateTime                @db.DateTime
+  CREATE_BY             String                  @db.NVarChar(255)
+  UPDATE_DATE           DateTime?               @db.DateTime
+  UPDATE_BY             String?                 @db.NVarChar(255)
+  CATEGORY_ID           String                  @db.UniqueIdentifier
+  INVENTORY             INVENTORY[]
+  MST_CATEGORY          MST_CATEGORY            @relation(fields: [CATEGORY_ID], references: [ID], onUpdate: NoAction, map: "MST_PRODUCT_FK")
+  REVIEWS               REVIEWS[]
+  TRS_TRANSACTION_ITEMS TRS_TRANSACTION_ITEMS[]
+}
+
+model MST_USER {
+  ID              String            @id(map: "MST_USER_PK") @default(dbgenerated("newid()"), map: "DF__MST_USER__ID__36B12243") @db.UniqueIdentifier
+  USERNAME        String            @db.NVarChar(100)
+  PASSWORD        String            @db.NVarChar(255)
+  EMAIL           String            @db.NVarChar(255)
+  ROLE            String            @db.NVarChar(255)
+  CREATE_DATE     DateTime          @db.DateTime
+  CREATE_BY       String            @db.NVarChar(255)
+  UPDATE_DATE     DateTime?         @db.DateTime
+  UPDATE_BY       String?           @db.VarChar(255)
+  TOKEN           String?           @db.NVarChar(255)
+  NOTIFICATION    NOTIFICATION[]
+  REVIEWS         REVIEWS[]
+  TRS_TRANSACTION TRS_TRANSACTION[]
+}
+
+model NOTIFICATION {
+  ID          String   @id(map: "PK_NOTIFICATION") @default(dbgenerated("newid()"), map: "DF__NOTIFICATION__ID__59063A47") @db.UniqueIdentifier
+  USER_ID     String   @db.UniqueIdentifier
+  MESSAGE     String   @db.NVarChar(255)
+  READ_STATUS Boolean
+  CREATE_DATE DateTime @db.DateTime
+  MST_USER    MST_USER @relation(fields: [USER_ID], references: [ID], onUpdate: NoAction, map: "NOTIFICATION_FK")
+}
+
+model REPORTS {
+  ID           String   @id(map: "PK_REPORTS") @default(dbgenerated("newid()"), map: "DF__REPORTS__ID__59FA5E80") @db.UniqueIdentifier
+  NAME         String   @db.NVarChar(255)
+  DESCRIPTION  String   @db.Text
+  CREATE_DATE  DateTime @db.DateTime
+  GENERATED_BY String   @db.NVarChar(255)
+}
+
+model REVIEWS {
+  ID          String      @id(map: "PK_REVIEWS") @default(dbgenerated("newid()"), map: "DF__REVIEWS__ID__5AEE82B9") @db.UniqueIdentifier
+  PRODUCT_ID  String      @db.UniqueIdentifier
+  USER_ID     String      @db.UniqueIdentifier
+  RATING      Int
+  COMMENT     String      @db.Text
+  CREATE_DATE DateTime    @db.DateTime
+  MST_PRODUCT MST_PRODUCT @relation(fields: [PRODUCT_ID], references: [ID], onUpdate: NoAction, map: "REVIEWS_FK_PRODUCT")
+  MST_USER    MST_USER    @relation(fields: [USER_ID], references: [ID], onUpdate: NoAction, map: "REVIEWS_FK_USER")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model test {
+  ID String @db.UniqueIdentifier
+
+  @@ignore
+}
+
+model TRS_PAYMENT {
+  ID              String          @id(map: "PK_TRS_PAYMENT") @default(dbgenerated("newid()"), map: "DF__TRS_PAYMENT__ID__5BE2A6F2") @db.UniqueIdentifier
+  TRANSACTION_ID  String          @db.UniqueIdentifier
+  AMOUNT          Decimal         @db.Decimal(38, 0)
+  METHOD          String          @db.NVarChar(100)
+  STATUS          String          @db.NVarChar(100)
+  CREATE_DATE     DateTime        @db.DateTime
+  CREATE_BY       String          @db.NVarChar(255)
+  UPDATE_DATE     DateTime?       @db.DateTime
+  UPDATE_BY       String?         @db.NVarChar(255)
+  TRS_TRANSACTION TRS_TRANSACTION @relation(fields: [TRANSACTION_ID], references: [ID], onUpdate: NoAction, map: "TRS_PAYMENT_FK")
+}
+
+model TRS_TRANSACTION {
+  ID                    String                  @id(map: "PK_TRS_TRANSACTION") @default(dbgenerated("newid()"), map: "DF__TRS_TRANSACT__ID__3D5E1FD2") @db.UniqueIdentifier
+  USER_ID               String                  @db.UniqueIdentifier
+  TOTAL_AMOUNT          Decimal                 @db.Decimal(38, 0)
+  STATUS                String                  @db.NVarChar(100)
+  CREATE_DATE           DateTime                @db.DateTime
+  CREATE_BY             String                  @db.NVarChar(255)
+  UPDATE_DATE           DateTime?               @db.DateTime
+  UPDATE_BY             String?                 @db.NVarChar(255)
+  TRS_PAYMENT           TRS_PAYMENT[]
+  MST_USER              MST_USER                @relation(fields: [USER_ID], references: [ID], onUpdate: NoAction, map: "TRS_TRANSACTION_FK")
+  TRS_TRANSACTION_ITEMS TRS_TRANSACTION_ITEMS[]
+}
+
+model TRS_TRANSACTION_ITEMS {
+  ID              String          @id(map: "PK_TRS_TRANSACTION_ITEMS") @default(dbgenerated("newid()"), map: "DF__TRS_TRANSACT__ID__5CD6CB2B") @db.UniqueIdentifier
+  TRANSACTION_ID  String          @db.UniqueIdentifier
+  PRODUCT_ID      String          @db.UniqueIdentifier
+  QUANTITY        Int
+  PRICE           Decimal         @db.Decimal(10, 2)
+  CREATE_DATE     DateTime        @db.DateTime
+  CREATE_BY       String          @db.NVarChar(255)
+  UPDATE_DATE     DateTime?       @db.DateTime
+  UPDATE_BY       String?         @db.NVarChar(255)
+  MST_PRODUCT     MST_PRODUCT     @relation(fields: [PRODUCT_ID], references: [ID], onUpdate: NoAction, map: "FK_TRS_TRANSACTION_ITEMS_REFERENCE_PRODUCT")
+  TRS_TRANSACTION TRS_TRANSACTION @relation(fields: [TRANSACTION_ID], references: [ID], onUpdate: NoAction, map: "FK_TRS_TRANSACTION_ITEMS_REFERENCE_TRANSACTION")
+}
