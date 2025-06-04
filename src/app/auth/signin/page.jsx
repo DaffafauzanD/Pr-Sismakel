@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RiErrorWarningFill } from '@remixicon/react';
 import { AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { Alert, AlertIcon, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -32,9 +33,8 @@ export default function Page() {
     const form = useForm({
       resolver: zodResolver(getSigninSchema()),
       defaultValues: {
-        email: 'demo@kt.com',
-        password: 'demo123',
-        rememberMe: false,
+        username: 'admin',
+        password: 'password',
       },
     });
   
@@ -42,29 +42,28 @@ export default function Page() {
       setIsProcessing(true);
       setError(null);
   
-    //   try {
-    //     const response = await signIn('credentials', {
-    //       redirect: false,
-    //       email: values.email,
-    //       password: values.password,
-    //       rememberMe: values.rememberMe,
-    //     });
+      try {
+        const response = await signIn('credentials', {
+          redirect: false,
+          username: values.username,
+          password: values.password,
+        });
   
-    //     if (response?.error) {
-    //       const errorData = JSON.parse(response.error);
-    //       setError(errorData.message);
-    //     } else {
-    //       router.push('/');
-    //     }
-    //   } catch (err) {
-    //     setError(
-    //       err instanceof Error
-    //         ? err.message
-    //         : 'An unexpected error occurred. Please try again.',
-    //     );
-    //   } finally {
-    //     setIsProcessing(false);
-    //   }
+        if (response?.error) {
+          const errorData = JSON.parse(response.error);
+          setError(errorData.message);
+        } else {
+          router.push('/');
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'An unexpected error occurred. Please try again.',
+        );
+      } finally {
+        setIsProcessing(false);
+      }
     }
   
     return (
@@ -84,7 +83,7 @@ export default function Page() {
               <RiErrorWarningFill className="text-primary" />
             </AlertIcon>
             <AlertTitle className="text-accent-foreground">
-              Use <span className="text-mono font-semibold">demo@kt.com</span>{' '}
+              Use <span className="text-mono font-semibold">admin</span>{' '}
               username and{' '}
               <span className="text-mono font-semibold">demo123</span> for demo
               access.
@@ -122,12 +121,12 @@ export default function Page() {
   
           <FormField
             control={form.control}
-            name="email"
+            name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your email" {...field} />
+                  <Input placeholder="Your username" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

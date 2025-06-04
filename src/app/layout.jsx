@@ -6,7 +6,9 @@ import { TooltipsProvider } from '@/providers/tooltips-provider';
 import { Toaster } from '@/components/ui/sonner';
 import '@/css/styles.css';
 import '@/components/keenicon/assets/styles.css';
+import { AuthProvider } from '@/providers/auth-provider';
 import { I18nProvider } from '@/providers/i18n-provider';
+import { QueryProvider } from '@/providers/query-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -27,6 +29,8 @@ export const metadata = {
             inter.className,
           )}
         >
+          <QueryProvider>
+            <AuthProvider>
               <SettingsProvider>
                 <ThemeProvider>
                   <I18nProvider>
@@ -37,6 +41,8 @@ export const metadata = {
                   </I18nProvider>
                 </ThemeProvider>
               </SettingsProvider>
+            </AuthProvider>
+          </QueryProvider>
         </body>
       </html>
     );
