@@ -24,11 +24,7 @@ export async function GET(){
             },
         });
 
-        return NextResponse.json({
-            data: roles,
-            message: 'Data roles succeessfuly fetch',
-            status: 400,
-        });
+        return NextResponse.json(roles);
     }catch{
         return NextResponse.json(
             {message: 'Oops! Something went wrong, Please try again in a momment'},

@@ -34,15 +34,15 @@ import { useRoleSelectQuery } from '../../roles/hooks/use-role-select-query';
 import { Avatar } from '@/components/ui/avatar';
 
 const UserList = () => {
-  const [pagination,  setPagination] = useState({
+  const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
-  const [sorting, setSorting] = useState([{ id: 'created_at', desc: true}]);
+  const [sorting, setSorting] = useState([{ id: 'created_at', desc: true }]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRole, setSelectedRole] = useState(null);
-  
-  const { data: roleList} = useRoleSelectQuery();
+
+  const { data: roleList } = useRoleSelectQuery();
 
   const fetchUsers = async ({
     pageIndex,
@@ -57,35 +57,24 @@ const UserList = () => {
     const params = new URLSearchParams({
       page: String(pageIndex + 1),
       limit: String(pageSize),
-      ...(sortField ? {sort: sortField, dir: sortDirection} : {}),
-      ...(searchQuery ? {query: searchQuery} : {}),
-      ...(selectedRole && selectedRole !== 'all'
-        ? { id_role: selectedRole} 
-        : {}),
+      ...(sortField ? { sort: sortField, dir: sortDirection } : {}),
+      ...(searchQuery ? { query: searchQuery } : {}),
+      ...(selectedRole && selectedRole !== 'all' ? { id_role: selectedRole } : {}),
     });
 
-    const response = await apiFetch(
-      `api/user-management/users?${params.toString()}`,
-    );
+    const response = await apiFetch(`/api/user-management/users?${params.toString()}`);
 
-    if(!response.ok){
-      throw new Error(
-        'Oops! Something didn’t go as planned, Please try again in a momment.',
-      );
+    if (!response.ok) {
+      throw new Error('Oops! Something didn’t go as planned, Please try again in a moment.');
     }
 
-    return response.json();
+    const result = await response.json();
+    console.log('fetchUsers result:', result);
+    return result; // ✅ return hanya sekali
   };
 
-  const {data, isLoading} = useQuery({
-    queryKey:[
-      'user-users',
-      pagination,
-      sorting,
-      searchQuery,
-      selectedRole,
-    ],
-
+  const { data, isLoading } = useQuery({
+    queryKey: ['user-users', pagination, sorting, searchQuery, selectedRole],
     queryFn: () =>
       fetchUsers({
         pageIndex: pagination.pageIndex,
@@ -101,12 +90,12 @@ const UserList = () => {
     retry: 1,
   });
 
-  const handleRoleSelection = (id_role) =>{
+  const handleRoleSelection = (id_role) => {
     setSelectedRole(id_role);
-    setPagination({...pagination, pageIndex: 0});
+    setPagination({ ...pagination, pageIndex: 0 });
   };
 
-  const handleRowClick = (row) =>{
+  const handleRowClick = (row) => {
     const userId = row.id;
     redirect(`/user-management/users/${userId}`);
   };
@@ -116,28 +105,19 @@ const UserList = () => {
       {
         accessorKey: 'username',
         id: 'username',
-        header: ({ column }) =>(
-          <DataGridColumnHeader
-            title='User'
-            visibility={true}
-            column={column}
-          />
+        header: ({ column }) => (
+          <DataGridColumnHeader title="User" visibility={true} column={column} />
         ),
-
-        cell: ({row}) => {
+        cell: ({ row }) => {
           const user = row.original;
           const initials = getInitials(user.username);
 
-          return(
-            <div className='flex items-center gap-3'>
-              <Avatar className="size-8">
-
-              </Avatar>
-              <div className='space-y-px'>
-                <div className='font-medium text-sm'>${user.role.name}</div>
-                <div className='text-muted-foreground text-xs'>
-                  ${user.username}
-                </div>
+          return (
+            <div className="flex items-center gap-3">
+              <Avatar className="size-8">{/* {initials} */}</Avatar>
+              <div className="space-y-px">
+                <div className="font-medium text-sm">{user.Role.name}</div>
+                <div className="text-muted-foreground text-xs">{user.username}</div>
               </div>
             </div>
           );
@@ -146,11 +126,11 @@ const UserList = () => {
         meta: {
           headerTitle: 'Name',
           Skeleton: (
-            <div className='flex items-center gap-3'>
-              <Skeleton className="size-8 rounded-full"/>
-              <div className='space-y-1'>
-                <Skeleton className="h-4 w-40"/>
-                <Skeleton className="h-4 w-24"/>
+            <div className="flex items-center gap-3">
+              <Skeleton className="size-8 rounded-full" />
+              <div className="space-y-1">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-4 w-24" />
               </div>
             </div>
           ),
@@ -162,27 +142,38 @@ const UserList = () => {
         accessorKey: 'role_name',
         id: 'role_name',
         header: ({ column }) => (
-          <DataGridColumnHeader
-            title="Role"
-            visibility={true}
-            column={column}
-          />
+          <DataGridColumnHeader title="Role" visibility={true} column={column} />
         ),
-      }
+        size: 150,
+        cell: ({ row }) => {
+          const role = row.original.Role || [];
+          if (!role) return '-';
+
+          return (
+            <Badge variant="secondary" appearance="outline">
+              {role.name}
+            </Badge>
+          );
+        },
+         meta: {
+          headerTitle: 'Role',
+          skeleton: <Skeleton className="w-28 h-7" />,
+        },
+        enableSorting: true,
+        enableHiding: true,
+      },
     ],
     []
   );
 
-  const [columnOrder, setColumnOrder] = useState(
-    columns.map((column) => column.id),
-  );
+  const [columnOrder, setColumnOrder] = useState(columns.map((col) => col.id));
 
   const table = useReactTable({
     columns,
     data: data?.data || [],
-    pageCount: Math.ceil((data?.pagination.total || 0) / pagination.pageSize),
+    pageCount: Math.ceil((data?.pagination?.total || 0) / pagination.pageSize), // ✅ fallback aman
     getRowId: (row) => row.id,
-    state:{
+    state: {
       pagination,
       sorting,
       columnOrder,
@@ -192,7 +183,7 @@ const UserList = () => {
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getFileteredRowModel: getFilteredRowModel(),
+    getFilteredRowModel: getFilteredRowModel(), // ✅ typo sebelumnya: getFileteredRowModel
     getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
     manualSorting: true,
@@ -204,10 +195,10 @@ const UserList = () => {
 
     const handleSearch = () => {
       setSearchQuery(inputValue);
-      setPagination({...pagination, pageIndex: 0});
+      setPagination({ ...pagination, pageIndex: 0 });
     };
 
-    return(
+    return (
       <CardHeader className="flex-col flex-wrap sm:flex-row items-stretch sm:items-center py-5">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
           <div className="relative">
@@ -226,9 +217,9 @@ const UserList = () => {
                 mode="icon"
                 variant="dim"
                 className="absolute end-1.5 top-1/2 -translate-y-1/2 h-6 w-6"
-                onClick={()=> setSearchQuery('')}
+                onClick={() => setSearchQuery('')}
               >
-                <X/>
+                <X />
               </Button>
             )}
           </div>
@@ -239,64 +230,57 @@ const UserList = () => {
             disabled={isLoading}
           >
             <SelectTrigger className="w-full sm:w-36">
-              <SelectValue placeholder="Filter by role"/>
+              <SelectValue placeholder="Filter by role" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All roles</SelectItem>
-              {roleList?.map((map) => (
-                <SelectItem key={role.id} value={value.id}>
+              {roleList?.map((role) => (
+                <SelectItem key={role.id} value={role.id}>
                   {role.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-        <div className='flex items-center justify-end'>
-              <Button
-                disabled={isLoading && true}
-                onClick={() => {
-
-                }}
-              >
-                <Plus/>
-                Add User
-              </Button>
+        <div className="flex items-center justify-end">
+          <Button disabled={isLoading} onClick={() => {}}>
+            <Plus />
+            Add User
+          </Button>
         </div>
       </CardHeader>
     );
   };
 
-  return(
-    <>
-      <DataGrid
-        table={table}
-        recordCount={data?.pagination.total || 0}
-        isLoading={isLoading}
-        onRowClick={handleRowClick}
-        tableLayout={{
-          columnResizable: true,
-          columnsPinnable: true,
-          columnsMovable: true,
-          columnsVisibility: true,
-        }}
-        tableClassName={{
-          edgeCell: 'px-5',
-        }}
-      >
-        <Card>
-          <DataGridToolbar>
-            <CardTable>
-              <ScrollArea>
-                <DataGridTable/>
-                <ScrollBar orientation='horizontal'/>
-              </ScrollArea>
-            </CardTable>
-          </DataGridToolbar>
-        </Card>
-      </DataGrid>
-    </>
+  return (
+    <DataGrid
+      table={table}
+      recordCount={data?.pagination?.total || 0} // ✅ aman
+      isLoading={isLoading}
+      onRowClick={handleRowClick}
+      tableLayout={{
+        columnResizable: true,
+        columnsPinnable: true,
+        columnsMovable: true,
+        columnsVisibility: true,
+      }}
+      tableClassName={{
+        edgeCell: 'px-5',
+      }}
+    >
+      <Card>
+        <DataGridToolbar />
+        <CardTable>
+          <ScrollArea>
+            <DataGridTable />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </CardTable>
+      </Card>
+    </DataGrid>
   );
 };
+
 
 export default UserList;
 
