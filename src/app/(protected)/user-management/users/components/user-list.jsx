@@ -162,6 +162,80 @@ const UserList = () => {
         enableSorting: true,
         enableHiding: true,
       },
+      {
+        accessorKey: 'created_by',
+        id: 'created_by',
+        header: ({ column }) => (
+          <DataGridColumnHeader title="Created By" visibility={true} column={column} />
+        ),
+        size: 150,
+        cell: ({ row }) => {
+          const user = row.original;
+          return (
+            <Badge variant="secondary" appearance="outline">
+              {user.created_by || 'System'}
+            </Badge>
+          );
+        },
+        meta: {
+          headerTitle: 'Created By',
+          skeleton: <Skeleton className="w-20 h-7" />,
+        },
+        enableSorting: true,
+        enableHiding: true,
+      },
+      {
+        accessorKey: 'created_at',
+        id: 'created_at',
+        header: ({ column }) => (
+          <DataGridColumnHeader title="Created At" visibility={true} column={column} />
+        ),
+        cell: (info) => formatDateTime(new Date(info.getValue())),
+        size: 200,
+        meta: {
+          headerTitle: 'Joined',
+          skeleton: <Skeleton className="w-20 h-7" />,
+        },
+        enableSorting: true,
+        enableHiding: true,
+      },
+      {
+        accessorKey: 'updated_by',
+        id: 'updated_by',
+        header: ({ column }) => (
+          <DataGridColumnHeader title="Updated By" visibility={true} column={column} />
+        ),
+        size: 150,
+        cell: ({ row }) => {
+          const user = row.original;
+          return (
+            <Badge variant="secondary" appearance="outline">
+              {user.updated_by || 'System'}
+            </Badge>
+          );
+        },
+        meta: {
+          headerTitle: 'Updated By',
+          skeleton: <Skeleton className="w-20 h-7" />,
+        },
+        enableSorting: true,
+        enableHiding: true,
+      },
+      {
+        accessorKey: 'updated_at',
+        id: 'updated_at',
+        header: ({ column }) => (
+          <DataGridColumnHeader title="Updated At" visibility={true} column={column} />
+        ),
+        cell: (info) => formatDateTime(new Date(info.getValue())),
+        size: 200,
+        meta: {
+          headerTitle: 'Last Updated',
+          skeleton: <Skeleton className="w-20 h-7" />,
+        },
+        enableSorting: true,
+        enableHiding: true,
+      }
     ],
     []
   );

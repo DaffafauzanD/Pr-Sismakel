@@ -6,6 +6,15 @@ import prisma from "../../../../../prisma/client";
 import { UserAddSchema } from "@/app/(protected)/user-management/users/forms/user-add-schema";
 import { use } from "react";
 
+/**
+ * @swagger
+ * /user-management:
+ *   get:
+ *     summary: Get users
+ *     responses:
+ *       200:
+ *         description: Success
+ */
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get('page') || '1', 10);
