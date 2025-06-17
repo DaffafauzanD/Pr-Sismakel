@@ -8,7 +8,7 @@ import { use } from "react";
 
 /**
  * @swagger
- * /user-management:
+ * /api/user-management/users:
  *   get:
  *     summary: Get users
  *     responses:

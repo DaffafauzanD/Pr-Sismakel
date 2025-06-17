@@ -5,6 +5,40 @@ import GoogleProvider from 'next-auth/providers/google';
 import prisma from "../../../../../prisma/client";
 import { NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/auth/callback/Credentials:
+ *   post:
+ *     summary: Login dengan username dan password
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: johndoe
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: secret123
+ *             required:
+ *               - username
+ *               - password
+ *     responses:
+ *       200:
+ *         description: Login berhasil
+ *       400:
+ *         description: Data tidak lengkap
+ *       401:
+ *         description: Password salah
+ *       404:
+ *         description: User tidak ditemukan
+ */
 const authOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [

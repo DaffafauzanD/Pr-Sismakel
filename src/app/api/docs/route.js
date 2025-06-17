@@ -1,27 +1,28 @@
-import swaggerJsdoc from 'swagger-jsdoc';
+import { createSwaggerSpec } from 'next-swagger-doc';
 
-const swaggerDefinition = {
-  openapi: '3.0.0',
-  info: {
-    title: 'API Docs',
-    version: '1.0.0',
-  },
-  servers: [
-    {
-      url: 'http://localhost:3000/api',
+export async function GET(req) {
+  const spec = createSwaggerSpec({
+    apiFolder: 'src/app/api', 
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'API Documentation',
+        version: '1.0',
+      },
+      components:{
+        securitySchemes:{
+          BearerAuth:{
+            type: "http",
+            scheme: "Bearer",
+            bearerFormat: "JWT",
+          },
+        },
+      },
+      security: [],
     },
-  ],
-};
-
-const options = {
-  swaggerDefinition,
-  apis: ['src/**/route.js'],
-};
-
-const swaggerSpec = swaggerJsdoc(options);
-
-export async function GET() {
-  return new Response(JSON.stringify(swaggerSpec), {
+  });
+  return new Response(JSON.stringify(spec), {
+    status: 200,
     headers: { 'Content-Type': 'application/json' },
   });
 }
