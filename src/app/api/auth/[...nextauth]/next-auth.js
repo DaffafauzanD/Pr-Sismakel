@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 /**
  * @swagger
  * /api/auth/callback/Credentials:
- *   post:
+ *   get:
  *     summary: Login dengan username dan password
  *     tags:
  *       - Auth
@@ -85,10 +85,22 @@ const authOptions = {
                     );
                 }
 
+                const role = await prisma.role.findUnique({
+                    where: {id: user.id_role},
+                    include: {
+                        RolePermission:{
+                            include:{
+                                Permission: true
+                            },
+                        },
+                    },
+                });
+
                 return {
                     id: user.id,
                     username: user.username || 'Anonymous',
                     id_role: user.id_role,
+                    permissions: role.RolePermission.map(p => p.Permission.name),
                 };
             },
         }),
@@ -155,8 +167,9 @@ const authOptions = {
                     });
 
                     token.id = user.id,
-                        token.username = user.username,
-                        token.id_role = user.id_role;
+                    token.username = user.username,
+                    token.id_role = user.id_role,
+                    token.permissions = user.permissions
                 }
             }
 

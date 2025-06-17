@@ -4,17 +4,17 @@ generator client {
 
 datasource db {
   provider = "sqlserver"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL_LOCAL")
 }
 
 model Barang {
-  id             String        @id(map: "PK__Barang__3213E83FAACEE62E") @default(dbgenerated("newid()"), map: "DF__Barang__id__5CD6CB2B") @db.UniqueIdentifier
+  id             String        @id(map: "PK__Barang__3213E83FAACEE62E") @default(dbgenerated("newid()"), map: "DF__Barang__id__59FA5E80") @db.UniqueIdentifier
   Nama           String        @db.NVarChar(255)
   id_kategori    String        @db.UniqueIdentifier
-  stock          Int           @default(0, map: "DF__Barang__stock__5DCAEF64")
+  stock          Int           @default(0, map: "DF__Barang__stock__5AEE82B9")
   satuan_harga   Decimal       @db.Decimal(15, 2)
-  created_at     DateTime?     @default(now(), map: "DF__Barang__created___5EBF139D")
-  updated_at     DateTime?     @default(now(), map: "DF__Barang__updated___5FB337D6")
+  created_at     DateTime?     @default(now(), map: "DF__Barang__created___5BE2A6F2")
+  updated_at     DateTime?     @default(now(), map: "DF__Barang__updated___5CD6CB2B")
   tanggal_keluar DateTime?     @db.Date
   created_by     String?       @db.UniqueIdentifier
   updated_by     String?       @db.UniqueIdentifier
@@ -25,11 +25,11 @@ model Barang {
 }
 
 model HistoriPenjualan {
-  id               String    @id(map: "PK__HistoriP__3213E83F7DCF9609") @default(dbgenerated("newid()"), map: "DF__HistoriPenju__id__4D94879B") @db.UniqueIdentifier
+  id               String    @id(map: "PK__HistoriP__3213E83F7DCF9609") @default(dbgenerated("newid()"), map: "DF__HistoriPenju__id__7B5B524B") @db.UniqueIdentifier
   id_transaksi     String    @db.UniqueIdentifier
   id_produk_detail String    @db.UniqueIdentifier
-  created_at       DateTime? @default(now(), map: "DF__HistoriPe__creat__4E88ABD4")
-  updated_at       DateTime? @default(now(), map: "DF__HistoriPe__updat__4F7CD00D")
+  created_at       DateTime? @default(now(), map: "DF__HistoriPe__creat__7C4F7684")
+  updated_at       DateTime? @default(now(), map: "DF__HistoriPe__updat__7D439ABD")
   created_by       String?   @db.UniqueIdentifier
   updated_by       String?   @db.UniqueIdentifier
   Transaksi        Transaksi @relation(fields: [id_transaksi], references: [id], onUpdate: NoAction, map: "HistoriPenjualan_FK")
@@ -37,9 +37,9 @@ model HistoriPenjualan {
 }
 
 model Kategori {
-  id         String    @id(map: "PK__Kategori__3213E83FC390DE18") @default(dbgenerated("newid()"), map: "DF__Kategori__id__6383C8BA") @db.UniqueIdentifier
+  id         String    @id(map: "PK__Kategori__3213E83FC390DE18") @default(dbgenerated("newid()"), map: "DF__Kategori__id__4AB81AF0") @db.UniqueIdentifier
   name       String    @unique(map: "UQ__Kategori__72E12F1B39DEA4E6") @db.NVarChar(100)
-  created_at DateTime? @default(now(), map: "DF__Kategori__create__6477ECF3")
+  created_at DateTime? @default(now(), map: "DF__Kategori__create__4BAC3F29")
   updated_at DateTime?
   created_by String?   @db.UniqueIdentifier
   updated_by String?   @db.UniqueIdentifier
@@ -47,38 +47,38 @@ model Kategori {
 }
 
 model Pendapatan {
-  id                         String     @id(map: "PK__Pendapat__3213E83FC9571B6C") @default(dbgenerated("newid()"), map: "DF__Pendapatan__id__48CFD27E") @db.UniqueIdentifier
+  id                         String     @id(map: "PK__Pendapat__3213E83FC9571B6C") @default(dbgenerated("newid()"), map: "DF__Pendapatan__id__619B8048") @db.UniqueIdentifier
   id_transaksi               String?    @unique(map: "UQ__Pendapat__205B81D10999137D") @db.UniqueIdentifier
   total_pendapatan_transaksi Decimal    @db.Decimal(15, 2)
-  created_at                 DateTime?  @default(now(), map: "DF__Pendapata__creat__49C3F6B7")
-  updated_at                 DateTime?  @default(now(), map: "DF__Pendapata__updat__4AB81AF0")
+  created_at                 DateTime?  @default(now(), map: "DF__Pendapata__creat__628FA481")
+  updated_at                 DateTime?  @default(now(), map: "DF__Pendapata__updat__6383C8BA")
   created_by                 String?    @db.UniqueIdentifier
   updated_by                 String?    @db.UniqueIdentifier
   Transaksi                  Transaksi? @relation(fields: [id_transaksi], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Pendapatan_FK")
 }
 
 model Pengeluaran {
-  id                    String    @id(map: "PK__Pengelua__3213E83FA6181269") @default(dbgenerated("newid()"), map: "DF__Pengeluaran__id__4222D4EF") @db.UniqueIdentifier
+  id                    String    @id(map: "PK__Pengelua__3213E83FA6181269") @default(dbgenerated("newid()"), map: "DF__Pengeluaran__id__6754599E") @db.UniqueIdentifier
   id_barang             String?   @db.UniqueIdentifier
   deskripsi_pengeluaran String    @db.NVarChar(255)
   jumlah_barang         Int?
   total_harga           Decimal   @db.Decimal(15, 2)
-  tanggal_pengeluaran   DateTime  @default(dbgenerated("CONVERT([date],getdate())"), map: "DF__Pengeluar__tangg__4316F928") @db.Date
-  created_at            DateTime? @default(now(), map: "DF__Pengeluar__creat__440B1D61")
-  updated_at            DateTime? @default(now(), map: "DF__Pengeluar__updat__44FF419A")
+  tanggal_pengeluaran   DateTime  @default(dbgenerated("CONVERT([date],getdate())"), map: "DF__Pengeluar__tangg__68487DD7") @db.Date
+  created_at            DateTime? @default(now(), map: "DF__Pengeluar__creat__693CA210")
+  updated_at            DateTime? @default(now(), map: "DF__Pengeluar__updat__6A30C649")
   created_by            String?   @db.UniqueIdentifier
   updated_by            String?   @db.UniqueIdentifier
   Barang                Barang?   @relation(fields: [id_barang], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Pengeluaran_FK")
 }
 
 model Produk {
-  id                   String             @id(map: "PK__Produk__3213E83F6C3DFDF2") @default(dbgenerated("newid()"), map: "DF__Produk__id__52593CB8") @db.UniqueIdentifier
+  id                   String             @id(map: "PK__Produk__3213E83F6C3DFDF2") @default(dbgenerated("newid()"), map: "DF__Produk__id__6E01572D") @db.UniqueIdentifier
   id_transaksi         String             @db.UniqueIdentifier
   id_barang            String             @db.UniqueIdentifier
   jumlah_barang        Int
   harga_saat_transaksi Decimal            @db.Decimal(15, 2)
-  created_at           DateTime?          @default(now(), map: "DF__Produk__created___534D60F1")
-  updated_at           DateTime?          @default(now(), map: "DF__Produk__updated___5441852A")
+  created_at           DateTime?          @default(now(), map: "DF__Produk__created___6EF57B66")
+  updated_at           DateTime?          @default(now(), map: "DF__Produk__updated___6FE99F9F")
   created_by           String?            @db.UniqueIdentifier
   updated_by           String?            @db.UniqueIdentifier
   HistoriPenjualan     HistoriPenjualan[]
@@ -87,22 +87,23 @@ model Produk {
 }
 
 model Role {
-  id         String    @id(map: "PK__Role__3213E83F5A7CE42E") @default(dbgenerated("newid()"), map: "DF__Role__id__6EF57B66") @db.UniqueIdentifier
-  name       String    @unique(map: "UQ__Role__72E12F1B752E3AAA") @db.NVarChar(100)
-  created_at DateTime? @default(now(), map: "DF__Role__created_at__6FE99F9F")
-  updated_at DateTime? @default(now(), map: "DF__Role__updated_at__70DDC3D8")
-  created_by String?   @db.UniqueIdentifier
-  updated_by String?   @db.UniqueIdentifier
-  User       User[]
+  id             String          @id(map: "PK__Role__3213E83F5A7CE42E") @default(dbgenerated("newid()"), map: "DF__Role__id__4F7CD00D") @db.UniqueIdentifier
+  name           String          @unique(map: "UQ__Role__72E12F1B752E3AAA") @db.NVarChar(100)
+  created_at     DateTime?       @default(now(), map: "DF__Role__created_at__5070F446")
+  updated_at     DateTime?       @default(now(), map: "DF__Role__updated_at__5165187F")
+  created_by     String?         @db.UniqueIdentifier
+  updated_by     String?         @db.UniqueIdentifier
+  RolePermission RolePermission?
+  User           User[]
 }
 
 model Transaksi {
-  id                      String             @id(map: "PK__Transaks__3213E83FB149B6B3") @default(dbgenerated("newid()"), map: "DF__Transaksi__id__571DF1D5") @db.UniqueIdentifier
+  id                      String             @id(map: "PK__Transaks__3213E83FB149B6B3") @default(dbgenerated("newid()"), map: "DF__Transaksi__id__5441852A") @db.UniqueIdentifier
   deskripsi_service       String?            @db.NVarChar(Max)
   total_harga_keseluruhan Decimal            @db.Decimal(15, 2)
-  is_service              Boolean            @default(false, map: "DF__Transaksi__is_se__5812160E")
-  created_at              DateTime?          @default(now(), map: "DF__Transaksi__creat__59063A47")
-  updated_at              DateTime?          @default(now(), map: "DF__Transaksi__updat__59FA5E80")
+  is_service              Boolean            @default(false, map: "DF__Transaksi__is_se__5535A963")
+  created_at              DateTime?          @default(now(), map: "DF__Transaksi__creat__5629CD9C")
+  updated_at              DateTime?          @default(now(), map: "DF__Transaksi__updat__571DF1D5")
   created_by              String?            @db.UniqueIdentifier
   updated_by              String?            @db.UniqueIdentifier
   HistoriPenjualan        HistoriPenjualan[]
@@ -111,13 +112,27 @@ model Transaksi {
 }
 
 model User {
-  id         String    @id(map: "PK__User__3213E83F4BBF2674") @default(dbgenerated("newid()"), map: "DF__User__id__693CA210") @db.UniqueIdentifier
+  id         String    @id(map: "PK__User__3213E83F4BBF2674") @default(dbgenerated("newid()"), map: "DF__User__id__75A278F5") @db.UniqueIdentifier
   username   String    @unique(map: "UQ__User__F3DBC572DA2082F0") @db.NVarChar(255)
   password   String    @db.NVarChar(255)
   id_role    String    @db.UniqueIdentifier
-  created_at DateTime? @default(now(), map: "DF__User__created_at__6A30C649")
-  updated_at DateTime? @default(now(), map: "DF__User__updated_at__6B24EA82")
+  created_at DateTime? @default(now(), map: "DF__User__created_at__76969D2E")
+  updated_at DateTime? @default(now(), map: "DF__User__updated_at__778AC167")
   created_by String?   @db.UniqueIdentifier
   updated_by String?   @db.UniqueIdentifier
   Role       Role      @relation(fields: [id_role], references: [id], onUpdate: NoAction, map: "User_FK")
+}
+
+model Permission {
+  id             String          @id(map: "Permission_PK") @db.UniqueIdentifier
+  name           String?         @db.VarChar(100)
+  RolePermission RolePermission?
+}
+
+model RolePermission {
+  id            String     @id(map: "RolePermission_PK") @db.UniqueIdentifier
+  id_role       String     @unique(map: "RoleIdUN") @db.UniqueIdentifier
+  id_permission String     @unique(map: "PermissionIdUN") @db.UniqueIdentifier
+  Permission    Permission @relation(fields: [id_permission], references: [id], onUpdate: NoAction, map: "PermissionId_FK")
+  Role          Role       @relation(fields: [id_role], references: [id], onUpdate: NoAction, map: "RoleId_FK")
 }

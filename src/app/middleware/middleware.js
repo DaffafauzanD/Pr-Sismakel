@@ -25,6 +25,7 @@ export async function middleware(req){
         req.headers.get('x-user-role', payload.role);
         req.headers.get('x-user-id', payload.id);
         req.headers.get('x-user-id', payload.username);
+        req.header.get('x-user-permission', JSON.stringify(payload.permissions || []));
 
         return NextResponse.next();
     }catch(error){
