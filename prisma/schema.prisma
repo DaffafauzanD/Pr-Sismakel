@@ -87,13 +87,13 @@ model Produk {
 }
 
 model Role {
-  id             String          @id(map: "PK__Role__3213E83F5A7CE42E") @default(dbgenerated("newid()"), map: "DF__Role__id__4F7CD00D") @db.UniqueIdentifier
-  name           String          @unique(map: "UQ__Role__72E12F1B752E3AAA") @db.NVarChar(100)
-  created_at     DateTime?       @default(now(), map: "DF__Role__created_at__5070F446")
-  updated_at     DateTime?       @default(now(), map: "DF__Role__updated_at__5165187F")
-  created_by     String?         @db.UniqueIdentifier
-  updated_by     String?         @db.UniqueIdentifier
-  RolePermission RolePermission?
+  id             String           @id(map: "PK__Role__3213E83F5A7CE42E") @default(dbgenerated("newid()"), map: "DF__Role__id__4F7CD00D") @db.UniqueIdentifier
+  name           String           @unique(map: "UQ__Role__72E12F1B752E3AAA") @db.NVarChar(100)
+  created_at     DateTime?        @default(now(), map: "DF__Role__created_at__5070F446")
+  updated_at     DateTime?        @default(now(), map: "DF__Role__updated_at__5165187F")
+  created_by     String?          @db.UniqueIdentifier
+  updated_by     String?          @db.UniqueIdentifier
+  RolePermission RolePermission[]
   User           User[]
 }
 
@@ -124,15 +124,15 @@ model User {
 }
 
 model Permission {
-  id             String          @id(map: "Permission_PK") @db.UniqueIdentifier
-  name           String?         @db.VarChar(100)
-  RolePermission RolePermission?
+  id             String           @id(map: "Permission_PK") @default(dbgenerated("newid()"), map: "DF__Permission__id__0A9D95DB") @db.UniqueIdentifier
+  name           String?          @db.VarChar(100)
+  RolePermission RolePermission[]
 }
 
 model RolePermission {
-  id            String     @id(map: "RolePermission_PK") @db.UniqueIdentifier
-  id_role       String     @unique(map: "RoleIdUN") @db.UniqueIdentifier
-  id_permission String     @unique(map: "PermissionIdUN") @db.UniqueIdentifier
+  id            String     @id(map: "RolePermission_PK") @default(dbgenerated("newid()"), map: "DF__RolePermissi__id__0B91BA14") @db.UniqueIdentifier
+  id_role       String     @db.UniqueIdentifier
+  id_permission String     @db.UniqueIdentifier
   Permission    Permission @relation(fields: [id_permission], references: [id], onUpdate: NoAction, map: "PermissionId_FK")
   Role          Role       @relation(fields: [id_role], references: [id], onUpdate: NoAction, map: "RoleId_FK")
 }

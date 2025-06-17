@@ -4,6 +4,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import prisma from "../../../../../prisma/client";
 import { NextResponse } from "next/server";
+import jwt from 'jsonwebtoken';
 
 /**
  * @swagger
@@ -96,11 +97,13 @@ const authOptions = {
                     },
                 });
 
+                console.log("role ::", JSON.stringify(role, null, 2));
+
                 return {
                     id: user.id,
                     username: user.username || 'Anonymous',
                     id_role: user.id_role,
-                    permissions: role.RolePermission.map(p => p.Permission.name),
+                    permissions: role?.RolePermission?.map(p => p.Permission?.name) || [],
                 };
             },
         }),
@@ -166,10 +169,23 @@ const authOptions = {
                         where: { id: user.id_role },
                     });
 
+                    const accessToken = jwt.sign(
+                    {
+                        id: user.id,
+                        username: user.username,
+                        id_role: user.id_role,
+                        permissions: user.permissions    
+                    },
+                    process.env.AUTH_SECRET,
+                    { expiresIn: '24h'}
+                    );
+
                     token.id = user.id,
+                    token.id_role = role.id,
+                    token.roleName = role.name,
                     token.username = user.username,
-                    token.id_role = user.id_role,
                     token.permissions = user.permissions
+                    token.accessToken = accessToken
                 }
             }
 
@@ -177,9 +193,7 @@ const authOptions = {
         },
         async session({ session, token }) {
             if (session.user) {
-                session.user.id = token.id;
-                session.user.username = token.username;
-                session.user.id_role = token.id_role;
+                session.user = token;
             }
             return session;
         },

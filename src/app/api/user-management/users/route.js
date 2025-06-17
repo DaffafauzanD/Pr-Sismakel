@@ -4,7 +4,7 @@ import { getClientIP } from "@/lib/api";
 import authOptions  from "@/app/api/auth/[...nextauth]/next-auth";
 import prisma from "../../../../../prisma/client";
 import { UserAddSchema } from "@/app/(protected)/user-management/users/forms/user-add-schema";
-import { use } from "react";
+import { getToken } from "next-auth/jwt";
 
 /**
  * @swagger
@@ -23,10 +23,14 @@ export async function GET(req) {
   const sortField = searchParams.get('sort') || 'name';
   const sortDirection = searchParams.get('dir') === 'desc' ? 'desc' : 'asc';
   const id_role = searchParams.get('id_role') || null;
+  const token = await getToken({
+    req, // 👉 Request dari Next.js Middleware
+    secret: process.env.AUTH_SECRET,
+  });
 
   try {
     const session = await getServerSession(authOptions);
-
+    console.log("token ::", token)
     if (!session) {
       return NextResponse.json(
         { message: 'Unathorize request' },
