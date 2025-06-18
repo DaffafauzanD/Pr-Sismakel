@@ -6,19 +6,21 @@ export async function GET(req) {
     definition: {
       openapi: '3.0.0',
       info: {
-        title: 'API Documentation',
+        title: 'API Sismakel',
         version: '1.0',
       },
       components:{
         securitySchemes:{
-          BearerAuth:{
+          bearerAuth:{
             type: "http",
-            scheme: "Bearer",
+            scheme: "bearer",
             bearerFormat: "JWT",
           },
         },
       },
-      security: [],
+      security:[{
+        bearerAuth: []
+      }]
     },
   });
   return new Response(JSON.stringify(spec), {

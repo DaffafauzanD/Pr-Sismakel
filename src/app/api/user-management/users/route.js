@@ -10,11 +10,48 @@ import { getToken } from "next-auth/jwt";
  * @swagger
  * /api/user-management/users:
  *   get:
- *     summary: Get users
+ *     summary: Get list of users with pagination, sorting, and direction
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         schema:
+ *          type: string
+ *         description: search by username
+ *         required: false
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number
+ *         required: false
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page
+ *         required: false
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *         description: Field name to sort by (e.g., created_at)
+ *         required: false
+ *       - in: query
+ *         name: dir
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         description: Sort direction
+ *         required: false
  *     responses:
  *       200:
- *         description: Success
+ *         description: List of users
  */
+
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get('page') || '1', 10);
@@ -23,14 +60,15 @@ export async function GET(req) {
   const sortField = searchParams.get('sort') || 'name';
   const sortDirection = searchParams.get('dir') === 'desc' ? 'desc' : 'asc';
   const id_role = searchParams.get('id_role') || null;
-  const token = await getToken({
-    req, // 👉 Request dari Next.js Middleware
-    secret: process.env.AUTH_SECRET,
-  });
+  // const token = await getToken({
+  //   req, // 👉 Request dari Next.js Middleware
+  //   secret: process.env.AUTH_SECRET,
+  // });
 
   try {
     const session = await getServerSession(authOptions);
-    console.log("token ::", token)
+    // console.log("token ::", token)
+    console.log("req", req);
     if (!session) {
       return NextResponse.json(
         { message: 'Unathorize request' },
@@ -99,6 +137,8 @@ export async function GET(req) {
         page,
         limit,
       },
+      status: 200,
+      message: 'succeesfuly fetching'
     });
   } catch (error) {
     console.error('API Error:', error);

@@ -5,16 +5,16 @@ import authOptions from "@/app/api/auth/[...nextauth]/next-auth";
 
 /**
  * @swagger
- * /api/user-management/users/select:
+ * /api/user-management/rolepermissions/select:
  *   get:
- *     summary: Get list of users without filters
+ *     summary: Get list of role permissions without filters
  *     security:
  *       - bearerAuth: []
  *     tags:
- *       - User
+ *       - Role Permissions
  *     responses:
  *       200:
- *         description: List of users
+ *         description: List of role permissions
  *         content:
  *           application/json:
  *             schema:
@@ -33,48 +33,54 @@ import authOptions from "@/app/api/auth/[...nextauth]/next-auth";
  *       500:
  *         description: Internal server error
  */
-export async function  GET(req) {
+export async function GET(req){
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('query');
 
     try{
-        const session = await getServerSession(authOptions);
+        const session = getServerSession(authOptions);
 
         if(!session){
             return NextResponse.json(
                 {message: 'Unauthorize request'},
-                {status: 401}
+                {status: 401},
             );
         }
 
-        const users = await prisma.user.findMany({
+        const rolePermissions = await prisma.rolePermission.findMany({
             where:{
                 OR:[
-                    {username: {contains: query.toLocaleLowerCase()}},
+                    {
+                        Role: {
+                            username: {contains: query.toLocaleLowerCase()},
+                        },
+                    },
                 ],
             },
             select:{
-                id:true,
-                username: true,
-                created_at: true,
-                created_by: true,
-                updated_at: true,
-                updated_by: true,
+                id: true,
+                id_role: true,
+                id_permission: true,
+                create_date: true,
+                create_by: true,
+                update_date: true,
+                update_by: true,
             },
             include:{
-                Role: true
+                Role: true,
+                Permission: true,
             },
         });
 
         return NextResponse.json({
-            data: users,
-            message: 'Data users successfuly fetch',
+            data: rolePermissions,
+            message: 'Succeesfuly fetching',
             status: 200,
         });
-    }catch{
+    }catch(error){
         return NextResponse.json(
             {message: 'Oops! Something went wrong, Please try again in a momment'},
             {status: 500},
-        );
+        )
     }
 }

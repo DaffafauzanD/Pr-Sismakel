@@ -126,6 +126,10 @@ model User {
 model Permission {
   id             String           @id(map: "Permission_PK") @default(dbgenerated("newid()"), map: "DF__Permission__id__0A9D95DB") @db.UniqueIdentifier
   name           String?          @db.VarChar(100)
+  create_date    DateTime         @default(now(), map: "DF__Permissio__creat__160F4887") @db.DateTime
+  create_by      String           @db.NVarChar(100)
+  update_date    DateTime?        @db.DateTime
+  update_by      DateTime?        @db.DateTime
   RolePermission RolePermission[]
 }
 
@@ -133,6 +137,10 @@ model RolePermission {
   id            String     @id(map: "RolePermission_PK") @default(dbgenerated("newid()"), map: "DF__RolePermissi__id__0B91BA14") @db.UniqueIdentifier
   id_role       String     @db.UniqueIdentifier
   id_permission String     @db.UniqueIdentifier
+  create_date   DateTime   @default(now(), map: "DF__RolePermi__creat__14270015") @db.DateTime
+  create_by     String     @db.NVarChar(100)
+  update_date   DateTime?  @db.DateTime
+  update_by     String?    @db.NVarChar(100)
   Permission    Permission @relation(fields: [id_permission], references: [id], onUpdate: NoAction, map: "PermissionId_FK")
   Role          Role       @relation(fields: [id_role], references: [id], onUpdate: NoAction, map: "RoleId_FK")
 }

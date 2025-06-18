@@ -14,6 +14,7 @@ export default function PageContent({ spec }) {
         spec,
         presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
         layout: 'StandaloneLayout',
+        persistAuthorization: true,
       });
     }
   }, [spec]);

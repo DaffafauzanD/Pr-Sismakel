@@ -99,6 +99,7 @@ export async function POST(req){
         const tokenPayload = {
             id: user.id,
             username: user.username,
+            id_role: user.id_role,
             roleName: role.name,
             permissions
         }

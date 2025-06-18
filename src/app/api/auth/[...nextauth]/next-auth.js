@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 /**
  * @swagger
  * /api/auth/callback/Credentials:
- *   get:
+ *   post:
  *     summary: Login dengan username dan password
  *     tags:
  *       - Auth
@@ -19,6 +19,9 @@ import jwt from 'jsonwebtoken';
  *         application/x-www-form-urlencoded:
  *           schema:
  *             type: object
+ *             required:
+ *               - username
+ *               - password
  *             properties:
  *               username:
  *                 type: string
@@ -27,12 +30,29 @@ import jwt from 'jsonwebtoken';
  *                 type: string
  *                 format: password
  *                 example: secret123
- *             required:
- *               - username
- *               - password
  *     responses:
  *       200:
  *         description: Login berhasil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     username:
+ *                       type: string
+ *                     id_role:
+ *                       type: string
+ *                     permissions:
+ *                       type: array
+ *                       items:
+ *                         type: string
  *       400:
  *         description: Data tidak lengkap
  *       401:
@@ -154,7 +174,6 @@ const authOptions = {
             },
         }),
     ],
-
     session: {
         strategy: 'jwt',
         maxAge: 24 * 60 * 60,
