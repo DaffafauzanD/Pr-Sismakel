@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { getClientIP } from "@/lib/api";
-import authOptions  from "@/app/api/auth/[...nextauth]/next-auth";
 import prisma from "../../../../../prisma/client";
 import { UserAddSchema } from "@/app/(protected)/user-management/users/forms/user-add-schema";
-import { getToken } from "next-auth/jwt";
 
 /**
  * @swagger
@@ -53,6 +49,18 @@ import { getToken } from "next-auth/jwt";
  */
 
 export async function GET(req) {
+  // Ambil user info dari header yang di-inject oleh middleware
+  const userId = req.headers.get('x-user-id');
+  const token = req.headers.get('Authorization')
+  const userRole = req.headers.get('x-user-role');
+  // Jika tidak ada user info, unauthorized
+  if (!userRole) {
+    return NextResponse.json(
+      { message: 'Unauthorized: No valid JWT token' },
+      { status: 401 },
+    );
+  }
+
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '10', 10);
@@ -60,22 +68,8 @@ export async function GET(req) {
   const sortField = searchParams.get('sort') || 'name';
   const sortDirection = searchParams.get('dir') === 'desc' ? 'desc' : 'asc';
   const id_role = searchParams.get('id_role') || null;
-  // const token = await getToken({
-  //   req, // 👉 Request dari Next.js Middleware
-  //   secret: process.env.AUTH_SECRET,
-  // });
 
   try {
-    const session = await getServerSession(authOptions);
-    // console.log("token ::", token)
-    console.log("req", req);
-    if (!session) {
-      return NextResponse.json(
-        { message: 'Unathorize request' },
-        { status: 401 },
-      );
-    }
-
     const totalCount = await prisma.user.count({
       where: {
         AND: [
@@ -152,18 +146,18 @@ export async function GET(req) {
   }
 }
 
-
 export async function POST(request){
+    // Ambil user info dari header yang di-inject oleh middleware
+    const userId = request.headers.get('x-user-id');
+    const userRole = request.headers.get('x-user-role');
+    if(!userId){
+        return NextResponse.json(
+            {message: "Unauthorized: No valid JWT token"},
+            {status: 401}
+        );
+    }
+
     try{
-        const session = await getServerSession(authOptions);
-
-        if(!session){
-            return NextResponse.json(
-                {message: "Unauthorize request"},
-                {status: 401}
-            );
-        }
-
         const body = await request.json();
         const parsedData = UserAddSchema.safeParse(body);
 
@@ -216,7 +210,7 @@ export async function POST(request){
                 user: result,
             },
             {
-                status: 400
+                status: 200
             },
         );
 

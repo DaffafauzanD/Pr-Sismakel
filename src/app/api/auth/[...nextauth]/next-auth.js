@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 
 /**
  * @swagger
- * /api/auth/callback/Credentials:
+ * /api/auth/callback/credentials:
  *   post:
  *     summary: Login dengan username dan password
  *     tags:
