@@ -9,30 +9,26 @@ http://localhost:3000/swagger
 
 ### 2. Login & Dapatkan Token
 - **Metode 1**: Klik tombol "🔑 Login & Get Token" di Swagger UI
-- **Metode 2**: Gunakan endpoint `/api/auth/login` dengan credentials:
-```json
-{
-  "username": "admin",
-  "password": "password"
-}
+- **Metode 2**: Gunakan endpoint `/api/auth/login` (set cookie httpOnly, cocok untuk browser)
+- **Metode 3**: Gunakan endpoint `/api/auth/token` (hanya return JWT, cocok untuk Postman/curl)
+
+#### Contoh request `/api/auth/token`:
+```bash
+curl -X POST http://localhost:3000/api/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"password"}'
 ```
 
-### 3. Response Login
-```json
-{
-  "success": true,
-  "message": "Login berhasil",
-  "data": {
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "user": {
-      "id": "1",
-      "username": "admin",
-      "roleName": "admin",
-      "permissions": ["read", "write", "delete"]
-    }
-  }
-}
-```
+### 3. Menggunakan Token
+- Untuk Swagger UI, klik tombol "Authorize" dan paste token.
+- Untuk Postman/curl, tambahkan header:
+  ```
+  Authorization: Bearer <accessToken>
+  ```
+
+### 4. Client-side (Browser)
+- Setelah login, cookie httpOnly dikirim otomatis pada setiap request.
+- **Tidak perlu** set header Authorization manual di fetch/axios.
 
 ## 🔧 Endpoint yang Tersedia
 

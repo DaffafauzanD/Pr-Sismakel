@@ -1,3 +1,5 @@
+# Pr-Sismakel
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
@@ -16,18 +18,31 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Authentication
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Uses **JWT Bearer Token** for authentication.
+- Token is set as a **httpOnly cookie** after login for browser security.
+- All protected API endpoints accept token from either:
+  - `Authorization: Bearer <token>` header (for Swagger UI, Postman, curl, etc)
+  - or from `accessToken` httpOnly cookie (for browser/client-side fetch).
+
+### Endpoints
+
+| Method | Endpoint                | Description                                 |
+|--------|-------------------------|---------------------------------------------|
+| POST   | `/api/auth/login`       | Login, set JWT as httpOnly cookie           |
+| POST   | `/api/auth/token`       | Generate JWT Bearer token (no cookie)       |
+| GET    | `/api/auth/me`          | Get current user info (from JWT)            |
+| POST   | `/api/auth/logout`      | Logout, clear cookie                        |
+
+See [README_SWAGGER_AUTH.md](./README_SWAGGER_AUTH.md) for Swagger UI usage and more details.
 
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Learn Next.js](https://nextjs.org/learn)
 
 ## Deploy on Vercel
 
