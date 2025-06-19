@@ -43,17 +43,23 @@ export default function Page() {
       setError(null);
   
       try {
-        const response = await signIn('credentials', {
-          redirect: false,
-          username: values.username,
-          password: values.password,
+        // Panggil endpoint /api/auth/login
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: values.username,
+            password: values.password,
+          }),
         });
-  
-        if (response?.error) {
-          const errorData = JSON.parse(response.error);
-          setError(errorData.message);
-        } else {
+        const data = await response.json();
+        if (data.success && data.data && data.data.accessToken) {
+          // Redirect ke dashboard
           router.push('/');
+        } else {
+          setError(data.message || 'Login gagal.');
         }
       } catch (err) {
         setError(
@@ -94,7 +100,7 @@ export default function Page() {
             <Button
               variant="outline"
               type="button"
-              onClick={() => signIn('google', { callbackUrl: '/' })}
+              onClick={() => { window.location.href = '/api/auth/google'; }}
             >
               <Icons.googleColorful className="size-5! opacity-100!" /> Sign in
               with Google

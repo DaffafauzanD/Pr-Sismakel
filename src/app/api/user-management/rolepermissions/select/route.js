@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import prisma from "../../../../../../prisma/client";
 import authOptions from "@/app/api/auth/[...nextauth]/next-auth";
+import { getAccessTokenFromRequest } from "@/lib/api-auth";
 
 /**
  * @swagger
@@ -34,6 +35,14 @@ import authOptions from "@/app/api/auth/[...nextauth]/next-auth";
  *         description: Internal server error
  */
 export async function GET(req){
+    const token = getAccessTokenFromRequest(req);
+    if (!token) {
+      return NextResponse.json(
+        { message: 'Unauthorized: No valid Access Token in cookie or Authorization header' },
+        { status: 401 },
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('query');
 

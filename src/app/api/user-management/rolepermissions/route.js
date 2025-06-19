@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import authOptions from "../../auth/[...nextauth]/next-auth";
 import prisma from "../../../../../prisma/client";
-
+import { getAccessTokenFromRequest } from "@/lib/api-auth";
 
 /**
  * @swagger
@@ -50,6 +50,14 @@ import prisma from "../../../../../prisma/client";
  *         description: List of role permissions
  */
 export async function GET(req){
+    const token = getAccessTokenFromRequest(req);
+    if (!token) {
+      return NextResponse.json(
+        { message: 'Unauthorized: No valid Access Token in cookie or Authorization header' },
+        { status: 401 },
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);

@@ -112,7 +112,8 @@ export async function POST(req){
 
         const accessToken = jwt.sign(tokenPayload, process.env.AUTH_SECRET, { expiresIn: '24h' });
 
-        return NextResponse.json({
+        // Set cookie httpOnly untuk accessToken
+        const response = NextResponse.json({
             success: true,
             message: 'Login berhasil',
             data: {
@@ -120,6 +121,22 @@ export async function POST(req){
                 user: tokenPayload
             }
         });
+        response.cookies.set('accessToken', accessToken, {
+            httpOnly: true,
+            path: '/',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24, // 1 hari
+        });
+        // Set cookie httpOnly untuk payload RBAC
+        response.cookies.set('rbacPayload', JSON.stringify(tokenPayload), {
+            httpOnly: true,
+            path: '/',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24, // 1 hari
+        });
+        return response;
     }catch(error){
         console.error('[LOGIN_ERROR]', error);
         return NextResponse.json({ 

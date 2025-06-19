@@ -15,21 +15,23 @@ export async function middleware(req){
 
     console.log('🔒 Protected path, checking authentication...');
 
-    // Handle case sensitivity - check both 'Authorization' and 'authorization'
-    const authHeader = req.headers.get('Authorization') || req.headers.get('authorization');
-    
-    console.log('🔍 Authorization header:', authHeader ? 'Present' : 'Missing');
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        console.log('❌ No valid Authorization header');
-        return NextResponse.json({message: 'Unauthorized: No Token'}, {status: 401});
+    // Ambil token dari cookie accessToken
+    let token = null;
+    const cookie = req.headers.get('cookie');
+    if (cookie) {
+        const match = cookie.match(/accessToken=([^;]+)/);
+        if (match) token = match[1];
     }
-
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-    console.log('🔍 Token length:', token.length);
-
+    // Jika tidak ada di cookie, cek Authorization header
+    if (!token) {
+        const authHeader = req.headers.get('Authorization') || req.headers.get('authorization');
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.substring(7);
+        }
+    }
+    console.log('🔍 Token length:', token ? token.length : 'Missing');
     if(!token){
-        console.log('❌ Empty token');
+        console.log('❌ No token found in cookie or Authorization header');
         return NextResponse.json({message: 'Unauthorized: No Token'}, {status: 401});
     }
 

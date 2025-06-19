@@ -56,45 +56,77 @@ import { jwtVerify } from "jose";
  *                   example: Unauthorized
  */
 export async function GET(req) {
-    try {
-        const authHeader = req.headers.get('authorization');
-        
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return NextResponse.json({
-                success: false,
-                message: 'Token tidak ditemukan'
-            }, { status: 401 });
-        }
+  try {
+    const cookie = req.headers.get('cookie');
+    let token = null;
+    let rbacPayload = null;
 
-        const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    if (cookie) {
+      const tokenMatch = cookie.match(/accessToken=([^;]+)/);
+      const rbacMatch = cookie.match(/rbacPayload=([^;]+)/);
 
+      if (tokenMatch) token = tokenMatch[1];
+      if (rbacMatch) {
         try {
-            const { payload } = await jwtVerify(
-                token,
-                new TextEncoder().encode(process.env.AUTH_SECRET)
-            );
-
-            return NextResponse.json({
-                success: true,
-                data: {
-                    id: payload.id,
-                    username: payload.username,
-                    id_role: payload.id_role,
-                    roleName: payload.roleName,
-                    permissions: payload.permissions || []
-                }
-            });
-        } catch (jwtError) {
-            return NextResponse.json({
-                success: false,
-                message: 'Token tidak valid'
-            }, { status: 401 });
+          rbacPayload = JSON.parse(decodeURIComponent(rbacMatch[1]));
+        } catch (e) {
+          rbacPayload = null;
         }
-    } catch (error) {
-        console.error('[ME_ERROR]', error);
-        return NextResponse.json({
-            success: false,
-            message: 'Internal Server Error'
-        }, { status: 500 });
+      }
     }
-} 
+
+    // ⛔ Unauthorized jika tidak ada token
+    if (!token) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized: No valid Access Token in cookie' },
+        { status: 401 }
+      );
+    }
+
+    // Buat Authorization Header secara eksplisit
+    const requestHeaders = new Headers();
+    requestHeaders.set('Authorization', `Bearer ${token}`);
+    requestHeaders.set('Content-Type', 'application/json');
+
+
+    // ✅ Verifikasi token JWT
+    let payload;
+    try {
+      const verified = await jwtVerify(
+        token,
+        new TextEncoder().encode(process.env.AUTH_SECRET)
+      );
+      payload = verified.payload;
+    } catch (err) {
+      return NextResponse.json(
+        { success: false, message: 'Token tidak valid' },
+        { status: 401 }
+      );
+    }
+
+    //🟡 Jika Anda perlu fetch ke API internal/eksternal:
+    // const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/`, {
+    //   headers: requestHeaders,
+    // });
+    // const apiData = await apiResponse.json();
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: payload.id,
+        username: payload.username,
+        id_role: payload.id_role,
+        roleName: payload.roleName,
+        permissions: payload.permissions || [],
+        accessToken: token
+      }
+    });
+
+  } catch (error) {
+    console.error('[GET_USER_INFO_ERROR]', error);
+    return NextResponse.json(
+      { success: false, message: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}

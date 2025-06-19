@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../../prisma/client";
 import { UserAddSchema } from "@/app/(protected)/user-management/users/forms/user-add-schema";
+import { getAccessTokenFromRequest } from '@/lib/api-auth';
 
 /**
  * @swagger
@@ -49,14 +50,10 @@ import { UserAddSchema } from "@/app/(protected)/user-management/users/forms/use
  */
 
 export async function GET(req) {
-  // Ambil user info dari header yang di-inject oleh middleware
-  const userId = req.headers.get('x-user-id');
-  const token = req.headers.get('Authorization')
-  const userRole = req.headers.get('x-user-role');
-  // Jika tidak ada user info, unauthorized
-  if (!userRole) {
+  const token = getAccessTokenFromRequest(req);
+  if (!token) {
     return NextResponse.json(
-      { message: 'Unauthorized: No valid JWT token' },
+      { message: 'Unauthorized: No valid Access Token in cookie or Authorization header' },
       { status: 401 },
     );
   }
