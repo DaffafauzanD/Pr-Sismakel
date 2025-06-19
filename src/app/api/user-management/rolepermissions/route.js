@@ -67,16 +67,6 @@ export async function GET(req){
     const id_role = searchParams.get('id_role') || null;
 
     try{
-
-        const session = await getServerSession(authOptions);
-
-        if(!session){
-            return NextResponse.json(
-                {message: 'Unauthorize request'},
-                {status: 401},
-            );
-        }
-
         const totalCount = await prisma.rolePermission.count({
         where: {
             AND: [

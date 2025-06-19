@@ -257,7 +257,7 @@ const UserList = () => {
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(), // ✅ typo sebelumnya: getFileteredRowModel
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
     manualSorting: true,
@@ -301,7 +301,7 @@ const UserList = () => {
             onValueChange={handleRoleSelection}
             value={selectedRole || 'all'}
             defaultValue="all"
-            disabled={isLoading}
+            disabled={isLoading && true}
           >
             <SelectTrigger className="w-full sm:w-36">
               <SelectValue placeholder="Filter by role" />

@@ -645,7 +645,7 @@ export const MENU_SIDEBAR_COMPACT = [
       },
       {
         title: 'Permissions',
-        path: '/user-management/permissions',
+        path: '/user-management/permission',
       },
       {
         title: 'Settings',
