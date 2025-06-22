@@ -190,7 +190,7 @@ const RolePermissionsList = () => {
                 ),
                 cell: (info) => {
                     const value = info.getValue()
-                    return new Date(value).toLocaleString();
+                    return formatDateTime(new Date(value));
                 },
                 enableSorting: true,
                 enableHiding: false,
@@ -205,6 +205,7 @@ const RolePermissionsList = () => {
                 header: ({column}) => (
                     <DataGridColumnHeader title='Create By' column={column}/>
                 ),
+                size:100,
                 cell: ({ row }) =>{
                     const value = row.original;
                     return (
@@ -228,7 +229,7 @@ const RolePermissionsList = () => {
                 ),
                 cell: (info) => {
                     const value = info.getValue();
-                    return new Date(value).toLocaleString();
+                    return formatDateTime(new Date(value));
                 },
                 enableSorting: true,
                 enableHiding: false,
@@ -243,6 +244,7 @@ const RolePermissionsList = () => {
                 header: ({column}) => (
                     <DataGridColumnHeader title='Update By' column={column}/>
                 ),
+                size: 100,
                 cell: ({ row }) => {
                     const value = row.original;
 

@@ -1,21 +1,19 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import prisma from "../../../../../../prisma/client";
-import authOptions from "@/app/api/auth/[...nextauth]/next-auth";
 import { getAccessTokenFromRequest } from "@/lib/api-auth";
 
 /**
  * @swagger
- * /api/user-management/roles/select:
+ * /api/user-management/permissions/select:
  *   get:
- *     summary: Get list of roles without filters
+ *     summary: Get list of permissions without filters
  *     security:
  *       - bearerAuth: []
  *     tags:
- *       - Roles
+ *       - Permissions
  *     responses:
  *       200:
- *         description: List of roles permissions
+ *         description: List of permissions
  *         content:
  *           application/json:
  *             schema:
@@ -35,27 +33,27 @@ import { getAccessTokenFromRequest } from "@/lib/api-auth";
  *         description: Internal server error
  */
 export async function GET(req){
-    try{
-        const token = getAccessTokenFromRequest(req);
-        if (!token) {
-          return NextResponse.json(
+    const token = await getAccessTokenFromRequest(req)
+    if(!token){
+        return NextResponse.json(
             { message: 'Unauthorized: No valid Access Token in cookie or Authorization header' },
             { status: 401 },
-          );
-        }
+        )
+    }
 
-        const roles = await prisma.role.findMany({
-            select:{
-                id:true,
-                name:true,
+    try{
+        const permissions = await prisma.permission.findMany({
+            select: {
+                id: true,
+                name: true,
             },
-            orderBy:{
+            orderBy: {
                 name: 'asc',
             },
         });
 
-        return NextResponse.json(roles);
-    }catch{
+        return NextResponse.json(permissions)
+    }catch(error){
         return NextResponse.json(
             {message: 'Oops! Something went wrong, Please try again in a momment'},
             {status: 500}
