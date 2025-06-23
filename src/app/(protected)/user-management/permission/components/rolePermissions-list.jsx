@@ -72,14 +72,13 @@ const RolePermissionsList = () => {
         const response = await apiFetch(
             `/api/user-management/rolepermissions?${params.toString()}`,
         );
-
-        if(!response){
-            throw new Error(
-                'Oops! Something didn’t go as planned. Please try again in a moment',
-            );
-        }
         
         const result = await response.json()
+        if(!response){
+            throw new Error(
+                result.message,
+            );
+        }
         return result;
     };
 

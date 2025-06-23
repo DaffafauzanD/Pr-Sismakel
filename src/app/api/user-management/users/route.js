@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "../../../../../prisma/client";
 import { UserAddSchema } from "@/app/(protected)/user-management/users/forms/user-add-schema";
 import { getAccessTokenFromRequest } from '@/lib/api-auth';
+import { hasPermission, hasRole, getRbacPayload } from "@/lib/rbac";
 
 /**
  * @swagger
@@ -50,6 +51,20 @@ import { getAccessTokenFromRequest } from '@/lib/api-auth';
  */
 
 export async function GET(req) {
+  // Cek permission untuk membaca data user
+  if (!hasPermission(req, 'user.read')) {
+    return NextResponse.json(
+      { message: 'Forbidden: Insufficient permissions to read users' },
+      { status: 403 }
+    );
+  }
+
+  // Ambil data RBAC untuk logging
+  const rbacData = getRbacPayload(req);
+  if (rbacData) {
+    console.log(`[USER_LIST] Request by ${rbacData.username} (${rbacData.roleName})`);
+  }
+
   const token = getAccessTokenFromRequest(req);
   if (!token) {
     return NextResponse.json(
@@ -144,6 +159,20 @@ export async function GET(req) {
 }
 
 export async function POST(request){
+    // Cek permission untuk membuat user baru
+    if (!hasPermission(request, 'user.create')) {
+        return NextResponse.json(
+            { message: 'Forbidden: Insufficient permissions to create users' },
+            { status: 403 }
+        );
+    }
+
+    // Ambil data RBAC untuk logging dan audit trail
+    const rbacData = getRbacPayload(request);
+    if (rbacData) {
+        console.log(`[USER_CREATE] Request by ${rbacData.username} (${rbacData.roleName})`);
+    }
+
     // Ambil user info dari header yang di-inject oleh middleware
     const userId = request.headers.get('x-user-id');
     const userRole = request.headers.get('x-user-role');
@@ -195,6 +224,7 @@ export async function POST(request){
                 data: {
                     username,
                     id_role,
+                    created_by: rbacData?.username || 'unknown', // Tambahkan audit trail
                 },
             });
 

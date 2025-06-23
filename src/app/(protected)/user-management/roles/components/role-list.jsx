@@ -60,13 +60,12 @@ const RolesList = () => {
             `/api/user-management/roles?${params.toString()}`,
         );
 
+        const result = await response.json()
         if(!response.ok){
             throw new Error(
-                'Oops! Something didn\'t go as planned. Please try again in a moment',
+                result.message,
             );
         }
-
-        const result = await response.json()
         return result;
     }
 
@@ -320,7 +319,11 @@ const RolesList = () => {
                 </Card>
             </DataGrid>
 
-            
+            <RoleEditDialog
+                open={editDialogOpen}
+                closeDialog={() => setEditDialogOpen(false)}
+                role={editRole}
+            />
         </>
     );
 };

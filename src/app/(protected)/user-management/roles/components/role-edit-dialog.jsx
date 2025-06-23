@@ -285,7 +285,7 @@ const RoleEditDialog = ({ open, closeDialog, role }) => {
             </DialogContent>
         </Dialog>
     );
-};  s
+};
 
 export default RoleEditDialog;
   

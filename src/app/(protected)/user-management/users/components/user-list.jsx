@@ -64,13 +64,11 @@ const UserList = () => {
 
     const response = await apiFetch(`/api/user-management/users?${params.toString()}`);
 
-    if (!response.ok) {
-      throw new Error('Oops! Something didn’t go as planned, Please try again in a moment.');
-    }
-
     const result = await response.json();
-    console.log('fetchUsers result:', result);
-    return result; // ✅ return hanya sekali
+    if (!response.ok) {
+      throw new Error(result.message);
+    }
+    return result;
   };
 
   const { data, isLoading } = useQuery({

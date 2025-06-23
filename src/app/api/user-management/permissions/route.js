@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../../prisma/client";
 import { getAccessTokenFromRequest } from "@/lib/api-auth";
+import { hasPermission } from "@/lib/rbac";
 
 /**
  * @swagger
@@ -48,6 +49,14 @@ import { getAccessTokenFromRequest } from "@/lib/api-auth";
  *         description: List of permissions     
  */
 export async function GET(req){
+    // Cek permission menggunakan fungsi hasPermission yang sudah dimodifikasi
+    if (!hasPermission(req, 'permission.read')) {
+        return NextResponse.json(
+            { message: 'Forbidden: Insufficient permissions' },
+            { status: 403 }
+        );
+    }
+
     const token = await getAccessTokenFromRequest(req);
     if(!token){
         return NextResponse.json(
