@@ -208,7 +208,7 @@ const RolePermissionsList = () => {
                 cell: ({ row }) =>{
                     const value = row.original;
                     return (
-                        <Badge variant='secondary' appearance='outline'>
+                        <Badge variant='success' appearance='outline'>
                             {value.create_by}
                         </Badge>
                     )
@@ -248,7 +248,7 @@ const RolePermissionsList = () => {
                     const value = row.original;
 
                     return(
-                        <Badge variant='info' appearance='outline'>
+                        <Badge variant='warning' appearance='outline'>
                             {value.update_by || '-'}
                         </Badge>
                     );

@@ -69,7 +69,7 @@ const RoleEditDialog = ({ open, closeDialog, role }) => {
 
     useEffect(() => {
         if (open) {
-            const permissionIds = role?.rolePermission?.permission?.map((p) => p.id) ?? [];
+            const permissionIds = role?.RolePermission?.map((rp) => rp.Permission.id) ?? [];
             
             form.reset({
                 name: role?.name || '',
@@ -272,8 +272,8 @@ const RoleEditDialog = ({ open, closeDialog, role }) => {
                         />
 
                         <DialogFooter>
-                            <Button type="button" varint="outline" onClick={closeDialog}>
-                                cancel
+                            <Button type="button" variant="outline" onClick={closeDialog}>
+                                Cancel
                             </Button>
                             <Button type="submit" disabled={isProcessing}>
                                 {isProcessing && <Spinner className="animate-spin"/>}

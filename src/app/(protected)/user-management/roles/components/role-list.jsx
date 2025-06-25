@@ -9,7 +9,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ChevronRight, Plus, Search, X } from 'lucide-react';
+import { ChevronRight, Ellipsis, Plus, Search, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 import { formatDate, formatDateTime, getInitials } from '@/lib/helpers';
 
@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import RoleEditDialog from './role-edit-dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const RolesList = () => {
     const [pagination, setPagination] = useState({
@@ -173,7 +174,7 @@ const RolesList = () => {
                 cell: ({row}) => {
                     const value = row.original;
                     return (
-                        <Badge variant='secondary' appearance='outline'>
+                        <Badge variant='success' appearance='outline'>
                             {value.created_by}
                         </Badge>
                     )
@@ -212,8 +213,8 @@ const RolesList = () => {
                 cell: ({row}) => {
                     const value = row.original;
                     return(
-                        <Badge variant='info' appearance='outline'>
-                            {value.updated_by || ''}
+                        <Badge variant='warning' appearance='outline'>
+                            {value.updated_by || '-'}
                         </Badge>
                     )
                 },
@@ -225,6 +226,37 @@ const RolesList = () => {
                     skeleton: <Skeleton className='w-20 h-7'/>
                 },
             },
+            {
+                id: 'actions',
+                header: 'Actions',
+                cell: ({row}) => (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button className="h-7 w-7" mode='icon' variant='ghost'>
+                                <Ellipsis/>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side='bottom' align='start'>
+                            <DropdownMenuItem onClick={() => {
+                                setEditRole(row.original)
+                                setEditDialogOpen(true);
+                            }}>
+                                Edit Role
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator/>
+                            <DropdownMenuItem>
+                                Delete Role
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ),
+                size: 75,
+                enableSorting: false,
+                enableResizing: false,
+                meta: {
+                    skeleton: <Skeleton className='size-5'/>
+                }
+            }
         ],
         [],
     );

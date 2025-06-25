@@ -148,7 +148,7 @@ const UserList = () => {
           if (!role) return '-';
 
           return (
-            <Badge variant="secondary" appearance="outline">
+            <Badge variant="destructive" appearance="outline">
               {role.name}
             </Badge>
           );
@@ -156,28 +156,6 @@ const UserList = () => {
          meta: {
           headerTitle: 'Role',
           skeleton: <Skeleton className="w-28 h-7" />,
-        },
-        enableSorting: true,
-        enableHiding: true,
-      },
-      {
-        accessorKey: 'created_by',
-        id: 'created_by',
-        header: ({ column }) => (
-          <DataGridColumnHeader title="Created By" visibility={true} column={column} />
-        ),
-        size: 150,
-        cell: ({ row }) => {
-          const user = row.original;
-          return (
-            <Badge variant="secondary" appearance="outline">
-              {user.created_by || 'System'}
-            </Badge>
-          );
-        },
-        meta: {
-          headerTitle: 'Created By',
-          skeleton: <Skeleton className="w-20 h-7" />,
         },
         enableSorting: true,
         enableHiding: true,
@@ -198,22 +176,22 @@ const UserList = () => {
         enableHiding: true,
       },
       {
-        accessorKey: 'updated_by',
-        id: 'updated_by',
+        accessorKey: 'created_by',
+        id: 'created_by',
         header: ({ column }) => (
-          <DataGridColumnHeader title="Updated By" visibility={true} column={column} />
+          <DataGridColumnHeader title="Created By" visibility={true} column={column} />
         ),
         size: 150,
         cell: ({ row }) => {
           const user = row.original;
           return (
-            <Badge variant="secondary" appearance="outline">
-              {user.updated_by || 'System'}
+            <Badge variant="success" appearance="outline">
+              {user.created_by}
             </Badge>
           );
         },
         meta: {
-          headerTitle: 'Updated By',
+          headerTitle: 'Created By',
           skeleton: <Skeleton className="w-20 h-7" />,
         },
         enableSorting: true,
@@ -233,7 +211,29 @@ const UserList = () => {
         },
         enableSorting: true,
         enableHiding: true,
-      }
+      },
+      {
+        accessorKey: 'updated_by',
+        id: 'updated_by',
+        header: ({ column }) => (
+          <DataGridColumnHeader title="Updated By" visibility={true} column={column} />
+        ),
+        size: 150,
+        cell: ({ row }) => {
+          const user = row.original;
+          return (
+            <Badge variant="warning" appearance="outline">
+              {user.updated_by || '-'}
+            </Badge>
+          );
+        },
+        meta: {
+          headerTitle: 'Updated By',
+          skeleton: <Skeleton className="w-20 h-7" />,
+        },
+        enableSorting: true,
+        enableHiding: true,
+      },
     ],
     []
   );

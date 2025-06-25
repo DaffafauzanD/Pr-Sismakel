@@ -657,17 +657,8 @@ export const MENU_SIDEBAR_COMPACT = [
     title: 'Store - Client',
     icon: ShoppingCart,
     children: [
-      { title: 'Home', path: '/store-client/home' },
-      {
-        title: 'Search Results - Grid',
-        path: '/store-client/search-results-grid',
-      },
-      {
-        title: 'Search Results - List',
-        path: '/store-client/search-results-list',
-      },
-      { title: 'Product Details', path: '/store-client/product-details' },
-      { title: 'Wishlist', path: '/store-client/wishlist' },
+      { title: 'Produk', path: '/store-client/barang' },
+      { title: 'Produk Details', path: '/store-client/produk-details' },
       {
         title: 'Checkout',
         children: [

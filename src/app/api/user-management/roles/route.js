@@ -333,7 +333,7 @@ export async function POST(request){
                 const rolePermissions = permissions.map(permissionId => ({
                     id_role: newRole.id,
                     id_permission: permissionId,
-                    created_by: rbacData?.username || 'unknown',
+                    create_by: rbacData?.username || 'unknown',
                 }));
 
                 await tx.RolePermission.createMany({

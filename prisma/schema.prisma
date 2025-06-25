@@ -91,8 +91,8 @@ model Role {
   name           String           @unique(map: "UQ__Role__72E12F1B752E3AAA") @db.NVarChar(100)
   created_at     DateTime?        @default(now(), map: "DF__Role__created_at__5070F446")
   updated_at     DateTime?        @default(now(), map: "DF__Role__updated_at__5165187F")
-  created_by     String?          @db.UniqueIdentifier
-  updated_by     String?          @db.UniqueIdentifier
+  created_by     String?          @db.NVarChar(16)
+  updated_by     String?          @db.NVarChar(16)
   RolePermission RolePermission[]
   User           User[]
 }
