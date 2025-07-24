@@ -13,7 +13,7 @@ import {
     ToolbarHeading,
     ToolbarTitle,
   } from '@/components/common/toolbar';
-  import RolesList from './components/role-list';
+  import RolesListStatic from './components/role-list-static';
 
   export const metaData = {
     title: 'Roles',
@@ -43,7 +43,7 @@ import {
                 </Toolbar>
             </Container>
             <Container>
-                <RolesList/>
+                <RolesListStatic/>
             </Container>
         </>
     )
